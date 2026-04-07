@@ -21,4 +21,11 @@ public class PostRepository {
     public List<Post> findAll() {
         return new ArrayList<>(postList);
     }
+
+    public Post findById(Long id) {
+        return postList.stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 게시글을 찾을 수 없습니다!"));
+    }
 }
