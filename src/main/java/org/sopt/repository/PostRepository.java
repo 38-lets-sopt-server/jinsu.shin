@@ -28,4 +28,9 @@ public class PostRepository {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 게시글을 찾을 수 없습니다!"));
     }
+
+    public void deleteById(Long id) {
+        Post post = findById(id);
+        postList.remove(post);
+    }
 }
