@@ -17,4 +17,8 @@ public class PostRepository {
     public Long generateId() {
         return nextId++;
     }
+
+    public List<Post> findAll() {
+        return new ArrayList<>(postList);
+    }
 }

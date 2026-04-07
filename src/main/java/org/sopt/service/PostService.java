@@ -26,8 +26,7 @@ public class PostService {
 
     // READ - 전체 📝 과제
     public List<Post> getAllPosts() {
-        // TODO
-        return null;
+        return postRepository.findAll();
     }
 
     // READ - 단건 📝 과제
