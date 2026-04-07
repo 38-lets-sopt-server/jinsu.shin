@@ -2,7 +2,7 @@ package org.sopt.controller;
 
 import org.sopt.domain.Post;
 import org.sopt.dto.request.CreatePostRequest;
-import org.sopt.dto.response.CreatePostResponse;
+import org.sopt.dto.response.CommonResponse;
 import org.sopt.exception.PostNotFoundException;
 import org.sopt.service.PostService;
 
@@ -12,48 +12,45 @@ public class PostController {
     private final PostService postService = new PostService();
 
     // POST /posts
-    public CreatePostResponse createPost(CreatePostRequest request) {
+    public CommonResponse<Long> createPost(CreatePostRequest request) {
         try {
             return postService.createPost(request);
         } catch (IllegalArgumentException e) {
-            return new CreatePostResponse(null, "🚫 " + e.getMessage());
+            return CommonResponse.error("🚫 " + e.getMessage());
         }
     }
 
-    // GET /posts 📝 과제
-    public List<Post> getAllPosts() {
+    // GET /posts
+    public CommonResponse<List<Post>> getAllPosts() {
         return postService.getAllPosts();
     }
 
-    // GET /posts/{id} 📝 과제
-    public Post getPost(Long id) {
+    // GET /posts/{id}
+    public CommonResponse<Post> getPost(Long id) {
         try {
             return postService.getPost(id);
         } catch (PostNotFoundException e) {
-            System.out.println("🚫 " + e.getMessage());
-            return null;
+            return CommonResponse.error("🚫 " + e.getMessage());
         }
     }
 
-    // PUT /posts/{id} 📝 과제
-    public void updatePost(Long id, String newTitle, String newContent) {
+    // PUT /posts/{id}
+    public CommonResponse<Void> updatePost(Long id, String newTitle, String newContent) {
         try {
-            postService.updatePost(id, newTitle, newContent);
-            System.out.println("게시글 수정 완료!");
+            return postService.updatePost(id, newTitle, newContent);
         } catch (PostNotFoundException e) {
-            System.out.println("🚫 " + e.getMessage());
+            return CommonResponse.error("🚫 " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            System.out.println("🚫 " + e.getMessage());
+            return CommonResponse.error("🚫 " + e.getMessage());
         }
     }
 
-    // DELETE /posts/{id} 📝 과제
-    public void deletePost(Long id) {
+    // DELETE /posts/{id}
+    public CommonResponse<Void> deletePost(Long id) {
         try {
-            postService.deletePost(id);
-            System.out.println("게시글 삭제 완료!");
+            return postService.deletePost(id);
         } catch (PostNotFoundException e) {
-            System.out.println("🚫 " + e.getMessage());
+            return CommonResponse.error("🚫 " + e.getMessage());
         }
     }
 }
