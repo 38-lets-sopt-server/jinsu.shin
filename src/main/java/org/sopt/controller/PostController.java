@@ -26,8 +26,12 @@ public class PostController {
 
     // GET /posts/{id} 📝 과제
     public Post getPost(Long id) {
-        // TODO: postService.getPost(id) 호출, 예외 발생 시 null 반환
-        return null;
+        try {
+            return postService.getPost(id);
+        } catch (IllegalArgumentException e) {
+            System.out.println("🚫 " + e.getMessage());
+            return null;
+        }
     }
 
     // PUT /posts/{id} 📝 과제

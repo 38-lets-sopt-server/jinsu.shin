@@ -31,8 +31,7 @@ public class PostService {
 
     // READ - 단건 📝 과제
     public Post getPost(Long id) {
-        // TODO
-        return null;
+        return postRepository.findById(id);
     }
 
     // UPDATE 📝 과제
