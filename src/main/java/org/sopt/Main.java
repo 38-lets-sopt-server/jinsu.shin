@@ -5,7 +5,7 @@ package org.sopt;
 import org.sopt.controller.PostController;
 import org.sopt.domain.Post;
 import org.sopt.dto.request.CreatePostRequest;
-import org.sopt.dto.response.CreatePostResponse;
+import org.sopt.dto.response.CommonResponse;
 
 import java.util.List;
 import java.util.Scanner;
@@ -38,15 +38,15 @@ public class Main {
                     String content = scanner.nextLine();
                     System.out.print("작성자: ");
                     String author = scanner.nextLine();
-                    // 클라이언트가 요청 객체를 만들어서 Controller에 전달
-                    CreatePostResponse response = postController.createPost(
+                    CommonResponse<Long> createResponse = postController.createPost(
                             new CreatePostRequest(title, content, author)
                     );
-                    System.out.println(response.message);
+                    System.out.println(createResponse.getMessage());
                     break;
 
                 case 2:
-                    List<Post> posts = postController.getAllPosts();
+                    CommonResponse<List<Post>> listResponse = postController.getAllPosts();
+                    List<Post> posts = listResponse.getData();
                     if (posts.isEmpty()) {
                         System.out.println("등록된 게시글이 없습니다.");
                     } else {
@@ -56,9 +56,13 @@ public class Main {
 
                 case 3:
                     System.out.print("조회할 게시글 ID: ");
-                    Post post = postController.getPost(scanner.nextLong());
+                    CommonResponse<Post> getResponse = postController.getPost(scanner.nextLong());
                     scanner.nextLine();
-                    if (post != null) System.out.println(post.getInfo());
+                    if (getResponse.isSuccess()) {
+                        System.out.println(getResponse.getData().getInfo());
+                    } else {
+                        System.out.println(getResponse.getMessage());
+                    }
                     break;
 
                 case 4:
@@ -69,13 +73,15 @@ public class Main {
                     String newTitle = scanner.nextLine();
                     System.out.print("새 내용: ");
                     String newContent = scanner.nextLine();
-                    postController.updatePost(updateId, newTitle, newContent);
+                    CommonResponse<Void> updateResponse = postController.updatePost(updateId, newTitle, newContent);
+                    System.out.println(updateResponse.getMessage());
                     break;
 
                 case 5:
                     System.out.print("삭제할 게시글 ID: ");
-                    postController.deletePost(scanner.nextLong());
+                    CommonResponse<Void> deleteResponse = postController.deletePost(scanner.nextLong());
                     scanner.nextLine();
+                    System.out.println(deleteResponse.getMessage());
                     break;
 
                 case 0:
