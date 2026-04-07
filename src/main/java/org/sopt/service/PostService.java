@@ -48,6 +48,6 @@ public class PostService {
 
     // DELETE 📝 과제
     public void deletePost(Long id) {
-        // TODO
+        postRepository.deleteById(id);
     }
 }
