@@ -21,8 +21,7 @@ public class PostController {
 
     // GET /posts 📝 과제
     public List<Post> getAllPosts() {
-        // TODO: postService.getAllPosts() 호출해서 반환
-        return null;
+        return postService.getAllPosts();
     }
 
     // GET /posts/{id} 📝 과제
