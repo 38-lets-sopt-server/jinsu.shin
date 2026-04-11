@@ -1,11 +1,13 @@
 package org.sopt.repository;
 
 import org.sopt.domain.Post;
-import org.sopt.exception.PostNotFoundException;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+@Repository
 public class PostRepository {
     private final List<Post> postList = new ArrayList<>();
     private Long nextId = 1L;
@@ -23,15 +25,13 @@ public class PostRepository {
         return new ArrayList<>(postList);
     }
 
-    public Post findById(Long id) {
+    public Optional<Post> findById(Long id) {
         return postList.stream()
                 .filter(p -> p.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new PostNotFoundException(id));
+                .findFirst();
     }
 
-    public void deleteById(Long id) {
-        Post post = findById(id);
-        postList.remove(post);
+    public boolean deleteById(Long id) {
+        return postList.removeIf(p -> p.getId().equals(id));
     }
 }
