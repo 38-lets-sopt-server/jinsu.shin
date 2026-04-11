@@ -1,56 +1,65 @@
 package org.sopt.controller;
 
-import org.sopt.domain.Post;
 import org.sopt.dto.request.CreatePostRequest;
-import org.sopt.dto.response.CommonResponse;
-import org.sopt.exception.PostNotFoundException;
+import org.sopt.dto.request.UpdatePostRequest;
+import org.sopt.dto.response.ApiResponse;
+import org.sopt.dto.response.PostResponse;
 import org.sopt.service.PostService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RestController
+@RequestMapping("/posts")
 public class PostController {
-    private final PostService postService = new PostService();
+    private final PostService postService;
+
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
 
     // POST /posts
-    public CommonResponse<Long> createPost(CreatePostRequest request) {
-        try {
-            return postService.createPost(request);
-        } catch (IllegalArgumentException e) {
-            return CommonResponse.error("🚫 " + e.getMessage());
-        }
+    @PostMapping
+    public ResponseEntity<ApiResponse<Long>> createPost(
+            @RequestBody CreatePostRequest request
+    ) {
+        Long id = postService.createPost(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("게시글 등록 완료!", id));
     }
 
     // GET /posts
-    public CommonResponse<List<Post>> getAllPosts() {
-        return postService.getAllPosts();
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<PostResponse>>> getAllPosts() {
+        return ResponseEntity.ok(ApiResponse.success(postService.getAllPosts()));
     }
 
     // GET /posts/{id}
-    public CommonResponse<Post> getPost(Long id) {
-        try {
-            return postService.getPost(id);
-        } catch (PostNotFoundException e) {
-            return CommonResponse.error("🚫 " + e.getMessage());
-        }
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<PostResponse>> getPost(
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(postService.getPost(id)));
     }
 
     // PUT /posts/{id}
-    public CommonResponse<Void> updatePost(Long id, String newTitle, String newContent) {
-        try {
-            return postService.updatePost(id, newTitle, newContent);
-        } catch (PostNotFoundException e) {
-            return CommonResponse.error("🚫 " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            return CommonResponse.error("🚫 " + e.getMessage());
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> updatePost(
+            @PathVariable Long id,
+            @RequestBody UpdatePostRequest request
+    ) {
+        postService.updatePost(id, request);
+        return ResponseEntity.ok(ApiResponse.success("게시글 수정 완료!", null));
     }
 
     // DELETE /posts/{id}
-    public CommonResponse<Void> deletePost(Long id) {
-        try {
-            return postService.deletePost(id);
-        } catch (PostNotFoundException e) {
-            return CommonResponse.error("🚫 " + e.getMessage());
-        }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePost(
+            @PathVariable Long id
+    ) {
+        postService.deletePost(id);
+        return ResponseEntity.noContent().build();
     }
 }
