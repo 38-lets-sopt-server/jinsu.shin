@@ -21,9 +21,9 @@ public class PostService {
 
     // CREATE
     public Long createPost(CreatePostRequest request) {
-        PostValidator.validatePost(request.title(), request.content());
+        PostValidator.validatePost(request.title());
         String createdAt = java.time.LocalDateTime.now().toString();
-        Post post = new Post(postRepository.generateId(), request.title(), request.content(), request.author(), createdAt);
+        Post post = new Post(postRepository.generateId(), request.title(), request.content(), request.author(), createdAt, request.isAnonymous());
         postRepository.save(post);
         return post.getId();
     }
@@ -44,7 +44,7 @@ public class PostService {
 
     // UPDATE
     public void updatePost(Long id, UpdatePostRequest request) {
-        PostValidator.validatePost(request.title(), request.content());
+        PostValidator.validatePost(request.title());
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new PostNotFoundException(id));
         post.update(request.title(), request.content());

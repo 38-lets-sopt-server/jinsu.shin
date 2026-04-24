@@ -7,7 +7,8 @@ public record PostResponse(
         String title,
         String content,
         String author,
-        String createdAt
+        String createdAt,
+        boolean isAnonymous
 ) {
     public static PostResponse from(Post post) {
         return new PostResponse(
@@ -15,7 +16,8 @@ public record PostResponse(
                 post.getTitle(),
                 post.getContent(),
                 post.getAuthor(),
-                post.getCreatedAt()
+                post.getCreatedAt(),
+                post.isAnonymous()
         );
     }
 }
