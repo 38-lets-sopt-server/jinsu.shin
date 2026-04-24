@@ -1,5 +1,6 @@
 package org.sopt.dto.response;
 
+import org.sopt.domain.BoardType;
 import org.sopt.domain.Post;
 
 public record PostResponse(
@@ -8,7 +9,8 @@ public record PostResponse(
         String content,
         String author,
         String createdAt,
-        boolean isAnonymous
+        boolean isAnonymous,
+        BoardType boardType
 ) {
     public static PostResponse from(Post post) {
         return new PostResponse(
@@ -17,7 +19,8 @@ public record PostResponse(
                 post.getContent(),
                 post.getAuthor(),
                 post.getCreatedAt(),
-                post.isAnonymous()
+                post.isAnonymous(),
+                post.getBoardType()
         );
     }
 }

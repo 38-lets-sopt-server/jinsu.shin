@@ -1,5 +1,6 @@
 package org.sopt.service;
 
+import org.sopt.domain.BoardType;
 import org.sopt.domain.Post;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
@@ -23,14 +24,17 @@ public class PostService {
     public Long createPost(CreatePostRequest request) {
         PostValidator.validatePost(request.title());
         String createdAt = java.time.LocalDateTime.now().toString();
-        Post post = new Post(postRepository.generateId(), request.title(), request.content(), request.author(), createdAt, request.isAnonymous());
+        Post post = new Post(postRepository.generateId(), request.title(), request.content(), request.author(), createdAt, request.isAnonymous(), request.boardType());
         postRepository.save(post);
         return post.getId();
     }
 
     // READ - 전체
-    public List<PostResponse> getAllPosts() {
-        return postRepository.findAll().stream()
+    public List<PostResponse> getAllPosts(BoardType boardType) {
+        List<Post> posts = (boardType != null)
+                ? postRepository.findByBoardType(boardType)
+                : postRepository.findAll();
+        return posts.stream()
                 .map(PostResponse::from)
                 .toList();
     }

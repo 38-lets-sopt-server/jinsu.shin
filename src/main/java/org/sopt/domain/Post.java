@@ -7,14 +7,16 @@ public class Post {
     private String author;
     private String createdAt;
     private boolean isAnonymous;
+    private BoardType boardType;
 
-    public Post(Long id, String title, String content, String author, String createdAt, boolean isAnonymous) {
+    public Post(Long id, String title, String content, String author, String createdAt, boolean isAnonymous, BoardType boardType) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.author = author;
         this.createdAt = createdAt;
         this.isAnonymous = isAnonymous;
+        this.boardType = boardType;
     }
 
     public Long getId() { return id; }
@@ -23,6 +25,7 @@ public class Post {
     public String getAuthor() { return author; }
     public String getCreatedAt() { return createdAt; }
     public boolean isAnonymous() { return isAnonymous; }
+    public BoardType getBoardType() { return boardType; }
 
     public void update(String title, String content) {
         this.title = title;
