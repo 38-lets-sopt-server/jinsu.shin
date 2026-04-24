@@ -3,7 +3,7 @@ package org.sopt.dto.response;
 import org.sopt.domain.BoardType;
 import org.sopt.domain.Post;
 
-public record PostResponse(
+public record PostDetailResponse(
         Long id,
         String title,
         String content,
@@ -12,8 +12,8 @@ public record PostResponse(
         boolean isAnonymous,
         BoardType boardType
 ) {
-    public static PostResponse from(Post post) {
-        return new PostResponse(
+    public static PostDetailResponse from(Post post) {
+        return new PostDetailResponse(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
