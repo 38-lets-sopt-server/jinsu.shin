@@ -34,9 +34,11 @@ public class PostController {
     // GET /posts
     @GetMapping
     public ResponseEntity<ApiResponse<List<PostResponse>>> getAllPosts(
-            @RequestParam(required = false) BoardType boardType
+            @RequestParam(required = false) BoardType boardType,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        return ResponseEntity.ok(ApiResponse.success(postService.getAllPosts(boardType)));
+        return ResponseEntity.ok(ApiResponse.success(postService.getAllPosts(boardType, page, size)));
     }
 
     // GET /posts/{id}

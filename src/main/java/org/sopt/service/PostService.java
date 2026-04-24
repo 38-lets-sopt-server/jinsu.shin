@@ -30,11 +30,16 @@ public class PostService {
     }
 
     // READ - 전체
-    public List<PostResponse> getAllPosts(BoardType boardType) {
+    public List<PostResponse> getAllPosts(BoardType boardType, int page, int size) {
         List<Post> posts = (boardType != null)
                 ? postRepository.findByBoardType(boardType)
                 : postRepository.findAll();
-        return posts.stream()
+        int from = page * size;
+        if (from >= posts.size()) {
+            return List.of();
+        }
+        int to = Math.min(from + size, posts.size());
+        return posts.subList(from, to).stream()
                 .map(PostResponse::from)
                 .toList();
     }
