@@ -1,5 +1,7 @@
 package org.sopt.validator;
 
+import org.sopt.exception.ErrorCode;
+
 public class PostValidator {
     private static final int TITLE_MAX_LENGTH = 50;
 
@@ -7,10 +9,12 @@ public class PostValidator {
 
     public static void validateTitle(String title) {
         if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("제목은 필수입니다!");
+            throw new IllegalArgumentException(
+                    ErrorCode.POST_002.getCode() + ": " + ErrorCode.POST_002.getMessage());
         }
         if (title.length() > TITLE_MAX_LENGTH) {
-            throw new IllegalArgumentException("제목은 50자 이하여야 합니다!");
+            throw new IllegalArgumentException(
+                    ErrorCode.POST_003.getCode() + ": " + ErrorCode.POST_003.getMessage());
         }
     }
 
