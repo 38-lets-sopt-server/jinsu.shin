@@ -13,12 +13,13 @@ public record PostDetailResponse(
         BoardType boardType
 ) {
     public static PostDetailResponse from(Post post) {
+        String author = post.isAnonymous() ? "익명" : post.getUser().getNickname();
         return new PostDetailResponse(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                post.getAuthor(),
-                post.getCreatedAt(),
+                author,
+                post.getCreatedAt().toString(),
                 post.isAnonymous(),
                 post.getBoardType()
         );

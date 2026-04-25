@@ -3,9 +3,9 @@ package org.sopt.dto.request;
 import org.sopt.domain.BoardType;
 
 public record CreatePostRequest(
+        Long userId,
         String title,
         String content,
-        String author,
         boolean isAnonymous,
         BoardType boardType
 ) {

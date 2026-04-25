@@ -13,12 +13,13 @@ public record PostSummaryResponse(
         BoardType boardType
 ) {
     public static PostSummaryResponse from(Post post) {
+        String author = post.isAnonymous() ? "익명" : post.getUser().getNickname();
         return new PostSummaryResponse(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                post.getAuthor(),
-                post.getCreatedAt(),
+                author,
+                post.getCreatedAt().toString(),
                 post.isAnonymous(),
                 post.getBoardType()
         );
