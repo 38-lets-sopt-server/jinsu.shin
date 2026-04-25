@@ -26,7 +26,7 @@ public class PostService {
     public CreatePostResponse createPost(CreatePostRequest request) {
         PostValidator.validatePost(request.title());
         String createdAt = java.time.LocalDateTime.now().toString();
-        Post post = new Post(postRepository.generateId(), request.title(), request.content(), request.author(), createdAt, request.isAnonymous(), request.boardType());
+        Post post = new Post(request.title(), request.content(), request.author(), createdAt, request.isAnonymous(), request.boardType());
         postRepository.save(post);
         return new CreatePostResponse(post.getId());
     }
@@ -61,10 +61,8 @@ public class PostService {
         post.update(request.title(), request.content());
     }
 
-    // DELETE
+    // DELETE 📝 과제
     public void deletePost(Long id) {
-        if (!postRepository.deleteById(id)) {
-            throw new PostNotFoundException(id);
-        }
+        // TODO
     }
 }
