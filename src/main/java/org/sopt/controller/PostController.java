@@ -1,9 +1,12 @@
 package org.sopt.controller;
 
+import org.sopt.domain.BoardType;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
 import org.sopt.dto.response.ApiResponse;
-import org.sopt.dto.response.PostResponse;
+import org.sopt.dto.response.CreatePostResponse;
+import org.sopt.dto.response.PostDetailResponse;
+import org.sopt.dto.response.PostSummaryResponse;
 import org.sopt.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,23 +25,27 @@ public class PostController {
 
     // POST /posts
     @PostMapping
-    public ResponseEntity<ApiResponse<Long>> createPost(
+    public ResponseEntity<ApiResponse<CreatePostResponse>> createPost(
             @RequestBody CreatePostRequest request
     ) {
-        Long id = postService.createPost(request);
+        CreatePostResponse response = postService.createPost(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("게시글 등록 완료!", id));
+                .body(ApiResponse.success("게시글 등록 완료!", response));
     }
 
     // GET /posts
     @GetMapping
-    public ResponseEntity<ApiResponse<List<PostResponse>>> getAllPosts() {
-        return ResponseEntity.ok(ApiResponse.success(postService.getAllPosts()));
+    public ResponseEntity<ApiResponse<List<PostSummaryResponse>>> getAllPosts(
+            @RequestParam(required = false) BoardType boardType,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(postService.getAllPosts(boardType, page, size)));
     }
 
     // GET /posts/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<PostResponse>> getPost(
+    public ResponseEntity<ApiResponse<PostDetailResponse>> getPost(
             @PathVariable Long id
     ) {
         return ResponseEntity.ok(ApiResponse.success(postService.getPost(id)));

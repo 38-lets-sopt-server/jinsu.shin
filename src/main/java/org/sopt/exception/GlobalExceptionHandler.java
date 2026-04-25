@@ -11,7 +11,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PostNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handlePostNotFound(PostNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        ErrorCode errorCode = e.getErrorCode();
+        return ResponseEntity.status(errorCode.getStatus())
                 .body(ApiResponse.error(e.getMessage()));
     }
 

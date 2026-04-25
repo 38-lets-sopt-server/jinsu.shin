@@ -1,7 +1,13 @@
 package org.sopt.exception;
 
 public class PostNotFoundException extends RuntimeException {
+    private final ErrorCode errorCode = ErrorCode.POST_001;
+
     public PostNotFoundException(Long id) {
-        super(id + "번 게시글을 찾을 수 없습니다!");
+        super(ErrorCode.POST_001.getCode() + ": " + ErrorCode.POST_001.getMessage() + " id: " + id);
+    }
+
+    public ErrorCode getErrorCode() {
+        return errorCode;
     }
 }

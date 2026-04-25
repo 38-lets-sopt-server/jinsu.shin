@@ -1,22 +1,24 @@
 package org.sopt.validator;
 
+import org.sopt.exception.ErrorCode;
+
 public class PostValidator {
+    private static final int TITLE_MAX_LENGTH = 50;
+
     private PostValidator() {}
 
     public static void validateTitle(String title) {
         if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("제목은 필수입니다!");
+            throw new IllegalArgumentException(
+                    ErrorCode.POST_002.getCode() + ": " + ErrorCode.POST_002.getMessage());
+        }
+        if (title.length() > TITLE_MAX_LENGTH) {
+            throw new IllegalArgumentException(
+                    ErrorCode.POST_003.getCode() + ": " + ErrorCode.POST_003.getMessage());
         }
     }
 
-    public static void validateContent(String content) {
-        if (content == null || content.isBlank()) {
-            throw new IllegalArgumentException("내용은 필수입니다!");
-        }
-    }
-
-    public static void validatePost(String title, String content) {
+    public static void validatePost(String title) {
         validateTitle(title);
-        validateContent(content);
     }
 }
