@@ -9,6 +9,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotFound(NotFoundException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        return ResponseEntity.status(errorCode.getStatus())
+                .body(ApiResponse.error(e.getMessage()));
+    }
+
     @ExceptionHandler(PostNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handlePostNotFound(PostNotFoundException e) {
         ErrorCode errorCode = e.getErrorCode();
