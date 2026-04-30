@@ -2,7 +2,7 @@ package org.sopt.domain;
 
 import jakarta.persistence.*;
 
-@Entity
+@Entity(name = "PostLike")
 @Table(name = "likes", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "post_id"})
 })
