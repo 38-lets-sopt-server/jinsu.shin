@@ -24,9 +24,12 @@ public record PostSummaryResponse(
         boolean isAnonymous,
 
         @Schema(description = "게시판 종류", example = "FREE")
-        BoardType boardType
+        BoardType boardType,
+
+        @Schema(description = "좋아요 수", example = "5")
+        long likeCount
 ) {
-    public static PostSummaryResponse from(Post post) {
+    public static PostSummaryResponse from(Post post, long likeCount) {
         String author = post.isAnonymous() ? "익명" : post.getUser().getNickname();
         return new PostSummaryResponse(
                 post.getId(),
@@ -35,7 +38,8 @@ public record PostSummaryResponse(
                 author,
                 post.getCreatedAt().toString(),
                 post.isAnonymous(),
-                post.getBoardType()
+                post.getBoardType(),
+                likeCount
         );
     }
 }

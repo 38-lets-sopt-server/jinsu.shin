@@ -10,6 +10,7 @@ import org.sopt.dto.response.PostDetailResponse;
 import org.sopt.dto.response.PostSummaryResponse;
 import org.sopt.exception.ErrorCode;
 import org.sopt.exception.NotFoundException;
+import org.sopt.repository.LikeRepository;
 import org.sopt.repository.PostRepository;
 import org.sopt.repository.UserRepository;
 import org.sopt.validator.PostValidator;
@@ -17,15 +18,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final LikeRepository likeRepository;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository) {
+    public PostService(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.likeRepository = likeRepository;
     }
 
     // CREATE
@@ -44,15 +49,23 @@ public class PostService {
     @Transactional(readOnly = true)
     public List<PostSummaryResponse> getAllPosts(BoardType boardType, int page, int size) {
         List<Post> posts = (boardType != null)
-                ? postRepository.findByBoardType(boardType)
-                : postRepository.findAll();
+                ? postRepository.findByBoardTypeWithUser(boardType)
+                : postRepository.findAllWithUser();
+
+        Map<Long, Long> likeCountMap = likeRepository.countGroupByPostId()
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> (Long) row[1]
+                ));
+
         int from = page * size;
         if (from >= posts.size()) {
             return List.of();
         }
         int to = Math.min(from + size, posts.size());
         return posts.subList(from, to).stream()
-                .map(PostSummaryResponse::from)
+                .map(post -> PostSummaryResponse.from(post, likeCountMap.getOrDefault(post.getId(), 0L)))
                 .toList();
     }
 
