@@ -82,7 +82,7 @@ public class PostService {
     // READ - 단건
     @Transactional(readOnly = true)
     public PostDetailResponse getPost(Long id) {
-        Post post = postRepository.findById(id)
+        Post post = postRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POST_001));
         return PostDetailResponse.from(post);
     }
@@ -91,7 +91,7 @@ public class PostService {
     @Transactional
     public PostDetailResponse updatePost(Long id, UpdatePostRequest request) {
         PostValidator.validatePost(request.title());
-        Post post = postRepository.findById(id)
+        Post post = postRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POST_001));
         post.update(request.title(), request.content());
         return PostDetailResponse.from(post);
