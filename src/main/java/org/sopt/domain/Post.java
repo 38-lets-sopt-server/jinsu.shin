@@ -1,10 +1,15 @@
 package org.sopt.domain;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
 import java.time.LocalDateTime;
 
 @Entity
-public class Post {
+@SQLDelete(sql = "UPDATE post SET deleted_at = NOW() WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+public class Post extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,7 +17,6 @@ public class Post {
 
     private String title;
     private String content;
-    private LocalDateTime createdAt;
     private boolean isAnonymous;
 
     @Enumerated(EnumType.STRING)
@@ -22,13 +26,15 @@ public class Post {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     protected Post() {}
 
-    public Post(String title, String content, User user, LocalDateTime createdAt, boolean isAnonymous, BoardType boardType) {
+    public Post(String title, String content, User user, boolean isAnonymous, BoardType boardType) {
         this.title = title;
         this.content = content;
         this.user = user;
-        this.createdAt = createdAt;
         this.isAnonymous = isAnonymous;
         this.boardType = boardType;
     }
@@ -36,7 +42,6 @@ public class Post {
     public Long getId() { return id; }
     public String getTitle() { return title; }
     public String getContent() { return content; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
     public boolean isAnonymous() { return isAnonymous; }
     public BoardType getBoardType() { return boardType; }
     public User getUser() { return user; }

@@ -16,7 +16,6 @@ import org.sopt.validator.PostValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -35,7 +34,7 @@ public class PostService {
         PostValidator.validatePost(request.title());
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_001));
-        Post post = new Post(request.title(), request.content(), user, LocalDateTime.now(), request.isAnonymous(), request.boardType());
+        Post post = new Post(request.title(), request.content(), user, request.isAnonymous(), request.boardType());
         postRepository.save(post);
         return new CreatePostResponse(post.getId());
     }
