@@ -7,6 +7,7 @@ import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
 import org.sopt.dto.response.CreatePostResponse;
 import org.sopt.dto.response.PostDetailResponse;
+import org.sopt.dto.response.PostSearchResponse;
 import org.sopt.dto.response.PostSummaryResponse;
 import org.sopt.exception.ErrorCode;
 import org.sopt.exception.NotFoundException;
@@ -66,6 +67,15 @@ public class PostService {
         int to = Math.min(from + size, posts.size());
         return posts.subList(from, to).stream()
                 .map(post -> PostSummaryResponse.from(post, likeCountMap.getOrDefault(post.getId(), 0L)))
+                .toList();
+    }
+
+    // SEARCH
+    @Transactional(readOnly = true)
+    public List<PostSearchResponse> searchPosts(String title) {
+        return postRepository.searchByTitle(title)
+                .stream()
+                .map(PostSearchResponse::from)
                 .toList();
     }
 

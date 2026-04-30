@@ -10,6 +10,7 @@ import org.sopt.dto.request.UpdatePostRequest;
 import org.sopt.dto.response.ApiResponse;
 import org.sopt.dto.response.CreatePostResponse;
 import org.sopt.dto.response.PostDetailResponse;
+import org.sopt.dto.response.PostSearchResponse;
 import org.sopt.dto.response.PostSummaryResponse;
 import org.sopt.service.PostService;
 import org.springframework.http.HttpStatus;
@@ -58,6 +59,18 @@ public class PostController {
             @RequestParam(defaultValue = "10") int size
     ) {
         return ResponseEntity.ok(ApiResponse.success(postService.getAllPosts(boardType, page, size)));
+    }
+
+    @Operation(summary = "게시글 제목 검색", description = "제목 키워드로 게시글을 검색합니다. 작성자 닉네임을 포함하여 반환합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "검색 성공")
+    })
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<PostSearchResponse>>> searchPosts(
+            @Parameter(description = "검색할 제목 키워드", example = "학식")
+            @RequestParam String title
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(postService.searchPosts(title)));
     }
 
     @Operation(summary = "게시글 단건 조회", description = "게시글 ID로 특정 게시글을 조회합니다.")
