@@ -68,9 +68,11 @@ public class PostController {
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<List<PostSearchResponse>>> searchPosts(
             @Parameter(description = "검색할 제목 키워드", example = "학식")
-            @RequestParam String title
+            @RequestParam(required = false) String title,
+            @Parameter(description = "검색할 작성자 닉네임", example = "진수")
+            @RequestParam(required = false) String nickname
     ) {
-        return ResponseEntity.ok(ApiResponse.success(postService.searchPosts(title)));
+        return ResponseEntity.ok(ApiResponse.success(postService.searchPosts(title, nickname)));
     }
 
     @Operation(summary = "게시글 단건 조회", description = "게시글 ID로 특정 게시글을 조회합니다.")

@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface PostRepository extends JpaRepository<Post, Long> {
+public interface PostRepository extends JpaRepository<Post, Long>, PostRepositoryCustom {
 
     @Query("SELECT p FROM Post p JOIN FETCH p.user")
     List<Post> findAllWithUser();
@@ -16,6 +16,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p JOIN FETCH p.user WHERE p.boardType = :boardType")
     List<Post> findByBoardTypeWithUser(@Param("boardType") BoardType boardType);
 
-    @Query("SELECT p FROM Post p JOIN FETCH p.user WHERE p.title LIKE %:title%")
-    List<Post> searchByTitle(@Param("title") String title);
 }

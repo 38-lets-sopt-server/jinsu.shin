@@ -72,8 +72,8 @@ public class PostService {
 
     // SEARCH
     @Transactional(readOnly = true)
-    public List<PostSearchResponse> searchPosts(String title) {
-        return postRepository.searchByTitle(title)
+    public List<PostSearchResponse> searchPosts(String title, String nickname) {
+        return postRepository.searchPosts(title, nickname)
                 .stream()
                 .map(PostSearchResponse::from)
                 .toList();
