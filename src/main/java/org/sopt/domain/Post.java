@@ -1,19 +1,33 @@
 package org.sopt.domain;
 
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
 public class Post {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String title;
     private String content;
-    private String author;
-    private String createdAt;
+    private LocalDateTime createdAt;
     private boolean isAnonymous;
+
+    @Enumerated(EnumType.STRING)
     private BoardType boardType;
 
-    public Post(Long id, String title, String content, String author, String createdAt, boolean isAnonymous, BoardType boardType) {
-        this.id = id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    protected Post() {}
+
+    public Post(String title, String content, User user, LocalDateTime createdAt, boolean isAnonymous, BoardType boardType) {
         this.title = title;
         this.content = content;
-        this.author = author;
+        this.user = user;
         this.createdAt = createdAt;
         this.isAnonymous = isAnonymous;
         this.boardType = boardType;
@@ -22,17 +36,13 @@ public class Post {
     public Long getId() { return id; }
     public String getTitle() { return title; }
     public String getContent() { return content; }
-    public String getAuthor() { return author; }
-    public String getCreatedAt() { return createdAt; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
     public boolean isAnonymous() { return isAnonymous; }
     public BoardType getBoardType() { return boardType; }
+    public User getUser() { return user; }
 
     public void update(String title, String content) {
         this.title = title;
         this.content = content;
-    }
-
-    public String getInfo() {
-        return "[" + id + "] " + title + " - " + author + " (" + createdAt + ")\n" + content;
     }
 }
