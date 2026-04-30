@@ -74,8 +74,11 @@ public class PostService {
         return PostDetailResponse.from(post);
     }
 
-    // DELETE 📝 과제
+    // DELETE
+    @Transactional
     public void deletePost(Long id) {
-        // TODO
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_001));
+        postRepository.delete(post);
     }
 }
