@@ -65,11 +65,12 @@ public class PostService {
 
     // UPDATE
     @Transactional
-    public void updatePost(Long id, UpdatePostRequest request) {
+    public PostDetailResponse updatePost(Long id, UpdatePostRequest request) {
         PostValidator.validatePost(request.title());
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POST_001));
         post.update(request.title(), request.content());
+        return PostDetailResponse.from(post);
     }
 
     // DELETE 📝 과제

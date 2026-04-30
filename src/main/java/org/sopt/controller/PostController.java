@@ -53,12 +53,12 @@ public class PostController {
 
     // PUT /posts/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> updatePost(
+    public ResponseEntity<ApiResponse<PostDetailResponse>> updatePost(
             @PathVariable Long id,
             @RequestBody UpdatePostRequest request
     ) {
-        postService.updatePost(id, request);
-        return ResponseEntity.ok(ApiResponse.success("게시글 수정 완료!", null));
+        PostDetailResponse response = postService.updatePost(id, request);
+        return ResponseEntity.ok(ApiResponse.success("게시글 수정 완료!", response));
     }
 
     // DELETE /posts/{id}
