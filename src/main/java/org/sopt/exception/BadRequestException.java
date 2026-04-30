@@ -1,9 +1,9 @@
 package org.sopt.exception;
 
-public class ConflictException extends RuntimeException {
+public class BadRequestException extends RuntimeException {
     private final ErrorCode errorCode;
 
-    public ConflictException(ErrorCode errorCode) {
+    public BadRequestException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }

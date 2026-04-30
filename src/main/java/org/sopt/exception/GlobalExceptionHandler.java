@@ -15,27 +15,28 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleNotFound(NotFoundException e) {
         ErrorCode errorCode = e.getErrorCode();
         return ResponseEntity.status(errorCode.getStatus())
-                .body(ApiResponse.error(e.getMessage()));
+                .body(ApiResponse.error(errorCode.getCode(), errorCode.getMessage()));
     }
 
     @ExceptionHandler(PostNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handlePostNotFound(PostNotFoundException e) {
         ErrorCode errorCode = e.getErrorCode();
         return ResponseEntity.status(errorCode.getStatus())
-                .body(ApiResponse.error(e.getMessage()));
+                .body(ApiResponse.error(errorCode.getCode(), errorCode.getMessage()));
     }
 
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ApiResponse<Void>> handleConflict(ConflictException e) {
         ErrorCode errorCode = e.getErrorCode();
         return ResponseEntity.status(errorCode.getStatus())
-                .body(ApiResponse.error(e.getMessage()));
+                .body(ApiResponse.error(errorCode.getCode(), errorCode.getMessage()));
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(e.getMessage()));
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBadRequest(BadRequestException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        return ResponseEntity.status(errorCode.getStatus())
+                .body(ApiResponse.error(errorCode.getCode(), errorCode.getMessage()));
     }
 
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)

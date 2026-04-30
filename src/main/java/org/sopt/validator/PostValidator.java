@@ -1,5 +1,6 @@
 package org.sopt.validator;
 
+import org.sopt.exception.BadRequestException;
 import org.sopt.exception.ErrorCode;
 
 public class PostValidator {
@@ -9,12 +10,10 @@ public class PostValidator {
 
     public static void validateTitle(String title) {
         if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException(
-                    ErrorCode.POST_002.getCode() + ": " + ErrorCode.POST_002.getMessage());
+            throw new BadRequestException(ErrorCode.POST_002);
         }
         if (title.length() > TITLE_MAX_LENGTH) {
-            throw new IllegalArgumentException(
-                    ErrorCode.POST_003.getCode() + ": " + ErrorCode.POST_003.getMessage());
+            throw new BadRequestException(ErrorCode.POST_003);
         }
     }
 
