@@ -1,9 +1,9 @@
 package org.sopt.exception;
 
-public class NotFoundException extends RuntimeException {
+public class ConflictException extends RuntimeException {
     private final ErrorCode errorCode;
 
-    public NotFoundException(ErrorCode errorCode) {
+    public ConflictException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }

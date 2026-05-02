@@ -44,3 +44,6 @@ bin/
 
 ### Docs ###
 docs/
+
+### Secrets ###
+src/main/resources/application.yml
