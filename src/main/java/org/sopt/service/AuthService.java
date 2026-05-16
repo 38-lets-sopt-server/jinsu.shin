@@ -51,6 +51,28 @@ public class AuthService {
         return TokenResponse.of(accessToken, refreshToken);
     }
 
+    @Transactional
+    public TokenResponse reissue(String refreshToken) {
+        Long userId = jwtService.verifyAndGetUserId(refreshToken);
+
+        RefreshToken stored = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> new UnauthorizedException(ErrorCode.AUTH_002));
+
+        if (stored.isExpired()) {
+            refreshTokenRepository.delete(stored);
+            throw new UnauthorizedException(ErrorCode.AUTH_002);
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UnauthorizedException(ErrorCode.AUTH_002));
+
+        String newAccessToken = jwtService.generateAccessToken(user.getId(), user.getEmail());
+        String newRefreshToken = jwtService.generateRefreshToken(user.getId());
+        stored.rotate(newRefreshToken, jwtService.getRefreshTokenExpiresInSeconds());
+
+        return TokenResponse.of(newAccessToken, newRefreshToken);
+    }
+
     @Transactional(readOnly = true)
     public UserResponse getUserById(Long userId) {
         User user = userRepository.findById(userId)
