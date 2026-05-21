@@ -3,9 +3,10 @@
 ## ERD
 
 ```
-users ||--o{ post : "작성"
-users ||--o{ likes : "누름"
-post  ||--o{ likes : "받음"
+users          ||--o{ post           : "작성"
+users          ||--o{ likes          : "누름"
+users          ||--o{ refresh_tokens : "보유"
+post           ||--o{ likes          : "받음"
 ```
 
 ---
@@ -23,12 +24,13 @@ post  ||--o{ likes : "받음"
 | PK | id | BIGINT | NOT NULL | 사용자 식별자 (AUTO_INCREMENT) | 1 |
 |  | nickname | VARCHAR(255) | NULL | 닉네임 | 에이솝트 |
 |  | email | VARCHAR(255) | NULL | 이메일 주소 | sopt@example.com |
+|  | password | VARCHAR(255) | NULL | 비밀번호 (현재 평문 저장, 6차에서 BCrypt 해시로 전환 예정) | pw1234 |
 
 **Example Row**
 
-| id | nickname | email |
-|----|----------|-------|
-| 1 | 에이솝트 | sopt@example.com |
+| id | nickname | email | password |
+|----|----------|-------|----------|
+| 1 | 에이솝트 | sopt@example.com | pw1234 |
 
 ---
 
@@ -85,11 +87,35 @@ post  ||--o{ likes : "받음"
 
 ---
 
+### refresh_tokens
+
+사용자별 Refresh Token 을 저장하는 테이블. 로그인 시 발급되고, 토큰 재발급(Rotate) 시 새 토큰으로 교체되며, 만료 시각이 지나면 무효 처리된다. 동일 사용자가 새로 로그인하면 기존 행을 삭제 후 재등록한다.
+
+**테이블 이름:** `refresh_tokens`
+
+| Key | Name | Type | Constraint | Description | Example |
+|-----|------|------|------------|-------------|---------|
+| PK | id | BIGINT | NOT NULL | Refresh Token 식별자 (AUTO_INCREMENT) | 1 |
+| FK | user_id | BIGINT | NOT NULL | 토큰 소유자 (`users.id` 논리적 참조, FK 제약은 미설정) | 1 |
+|  | token | VARCHAR(512) | NOT NULL, UNIQUE | Refresh Token (JWT 문자열) | eyJhbGciOiJIUzI1NiJ9... |
+|  | expires_at | DATETIME(6) | NOT NULL | 만료 일시 (발급 시각 + 2주) | 2026-06-04 20:00:00.000000 |
+
+> Rotate 전략: 토큰 재발급 시 `token`/`expires_at` 을 새 값으로 갱신 (행 삭제·재생성 X)
+
+**Example Row**
+
+| id | user_id | token | expires_at |
+|----|---------|-------|------------|
+| 1 | 1 | eyJhbGciOiJIUzI1NiJ9... | 2026-06-04 20:00:00.000000 |
+
+---
+
 ## 테이블 관계
 
 | 관계 | 설명 |
 |------|------|
 | users : post = 1 : N | 한 사용자가 여러 게시글을 작성할 수 있음 |
 | users : likes = 1 : N | 한 사용자가 여러 게시글에 좋아요를 누를 수 있음 |
+| users : refresh_tokens = 1 : N | 한 사용자가 여러 Refresh Token 을 가질 수 있음 (실제로는 로그인마다 기존 행 삭제 후 1건만 유지) |
 | post : likes = 1 : N | 한 게시글에 여러 사용자가 좋아요를 누를 수 있음 |
 | users ↔ post (N:M) | `likes` 테이블이 중간 테이블 역할 |
