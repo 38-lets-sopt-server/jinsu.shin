@@ -1,7 +1,6 @@
 package org.sopt.domain.like.service;
 
 import lombok.RequiredArgsConstructor;
-import org.sopt.domain.like.dto.request.LikeRequest;
 import org.sopt.domain.like.entity.Like;
 import org.sopt.domain.like.repository.LikeRepository;
 import org.sopt.domain.post.entity.Post;
@@ -23,8 +22,8 @@ public class LikeService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void addLike(Long postId, LikeRequest request) {
-        User user = userRepository.findById(request.userId())
+    public void addLike(Long postId, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USR_404_001));
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POS_404_001));
@@ -43,8 +42,8 @@ public class LikeService {
     }
 
     @Transactional
-    public void cancelLike(Long postId, LikeRequest request) {
-        User user = userRepository.findById(request.userId())
+    public void cancelLike(Long postId, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USR_404_001));
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POS_404_001));
