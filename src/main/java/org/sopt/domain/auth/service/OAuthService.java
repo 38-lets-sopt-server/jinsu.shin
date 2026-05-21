@@ -1,0 +1,112 @@
+package org.sopt.domain.auth.service;
+
+import lombok.RequiredArgsConstructor;
+import org.sopt.domain.auth.dto.oauth.KakaoTokenResponse;
+import org.sopt.domain.auth.dto.oauth.KakaoUserInfoResponse;
+import org.sopt.domain.auth.dto.response.TokenResponse;
+import org.sopt.domain.user.entity.Provider;
+import org.sopt.domain.user.entity.User;
+import org.sopt.domain.user.repository.UserRepository;
+import org.sopt.global.exception.BusinessException;
+import org.sopt.global.exception.ErrorCode;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
+
+@Service
+@RequiredArgsConstructor
+public class OAuthService {
+
+    private final UserRepository userRepository;
+    private final TokenIssuer tokenIssuer;
+    private final RestClient restClient;
+
+    @Value("${oauth.kakao.client-id}")
+    private String kakaoClientId;
+
+    @Value("${oauth.kakao.client-secret}")
+    private String kakaoClientSecret;
+
+    @Value("${oauth.kakao.redirect-uri}")
+    private String kakaoRedirectUri;
+
+    @Value("${oauth.kakao.token-uri}")
+    private String kakaoTokenUri;
+
+    @Value("${oauth.kakao.user-info-uri}")
+    private String kakaoUserInfoUri;
+
+    @Transactional
+    public TokenResponse loginWithKakao(String code) {
+        String kakaoAccessToken = requestKakaoAccessToken(code);
+        KakaoUserInfoResponse userInfo = requestKakaoUserInfo(kakaoAccessToken);
+
+        String providerId = String.valueOf(userInfo.id());
+        String email = userInfo.kakaoAccount() != null ? userInfo.kakaoAccount().email() : null;
+        String nickname = userInfo.kakaoAccount() != null && userInfo.kakaoAccount().profile() != null
+                ? userInfo.kakaoAccount().profile().nickname()
+                : null;
+
+        User user = userRepository.findByProviderAndProviderId(Provider.KAKAO, providerId)
+                .orElseGet(() -> registerKakaoUser(email, nickname, providerId));
+
+        return tokenIssuer.issue(user);
+    }
+
+    private User registerKakaoUser(String email, String nickname, String providerId) {
+        if (email != null) {
+            userRepository.findByEmail(email).ifPresent(u -> {
+                throw new BusinessException(ErrorCode.ATH_409_002);
+            });
+        }
+        return userRepository.save(User.oauth(nickname, email, Provider.KAKAO, providerId));
+    }
+
+    private String requestKakaoAccessToken(String code) {
+        try {
+            MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+            form.add("grant_type", "authorization_code");
+            form.add("client_id", kakaoClientId);
+            form.add("client_secret", kakaoClientSecret);
+            form.add("redirect_uri", kakaoRedirectUri);
+            form.add("code", code);
+
+            KakaoTokenResponse response = restClient.post()
+                    .uri(kakaoTokenUri)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .body(form)
+                    .retrieve()
+                    .body(KakaoTokenResponse.class);
+
+            if (response == null || response.accessToken() == null) {
+                throw new BusinessException(ErrorCode.ATH_401_005);
+            }
+            return response.accessToken();
+        } catch (RestClientException e) {
+            throw new BusinessException(ErrorCode.ATH_500_001);
+        }
+    }
+
+    private KakaoUserInfoResponse requestKakaoUserInfo(String kakaoAccessToken) {
+        try {
+            KakaoUserInfoResponse response = restClient.get()
+                    .uri(kakaoUserInfoUri)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + kakaoAccessToken)
+                    .retrieve()
+                    .body(KakaoUserInfoResponse.class);
+
+            if (response == null || response.id() == null) {
+                throw new BusinessException(ErrorCode.ATH_401_005);
+            }
+            return response;
+        } catch (RestClientException e) {
+            throw new BusinessException(ErrorCode.ATH_500_001);
+        }
+    }
+}
