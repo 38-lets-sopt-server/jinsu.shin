@@ -1,33 +1,25 @@
 package org.sopt.domain.auth.service;
-import org.sopt.global.exception.BusinessException;
 
-import org.sopt.global.security.JwtService;
-import org.sopt.domain.auth.entity.RefreshToken;
-import org.sopt.domain.user.entity.User;
+import lombok.RequiredArgsConstructor;
 import org.sopt.domain.auth.dto.response.TokenResponse;
-import org.sopt.domain.user.dto.response.UserResponse;
-import org.sopt.global.exception.ErrorCode;
+import org.sopt.domain.auth.entity.RefreshToken;
 import org.sopt.domain.auth.repository.RefreshTokenRepository;
+import org.sopt.domain.user.dto.response.UserResponse;
+import org.sopt.domain.user.entity.User;
 import org.sopt.domain.user.repository.UserRepository;
+import org.sopt.global.exception.BusinessException;
+import org.sopt.global.exception.ErrorCode;
+import org.sopt.global.security.JwtService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
-
-    public AuthService(
-            UserRepository userRepository,
-            RefreshTokenRepository refreshTokenRepository,
-            JwtService jwtService
-    ) {
-        this.userRepository = userRepository;
-        this.refreshTokenRepository = refreshTokenRepository;
-        this.jwtService = jwtService;
-    }
 
     @Transactional
     public TokenResponse login(String email, String password) {

@@ -1,22 +1,20 @@
 package org.sopt.domain.user.service;
-import org.sopt.global.exception.BusinessException;
 
-import org.sopt.domain.user.entity.User;
+import lombok.RequiredArgsConstructor;
 import org.sopt.domain.user.dto.request.UserCreateRequest;
 import org.sopt.domain.user.dto.response.UserResponse;
-import org.sopt.global.exception.ErrorCode;
+import org.sopt.domain.user.entity.User;
 import org.sopt.domain.user.repository.UserRepository;
+import org.sopt.global.exception.BusinessException;
+import org.sopt.global.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Transactional
     public UserResponse join(UserCreateRequest request) {

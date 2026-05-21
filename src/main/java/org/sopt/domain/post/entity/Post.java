@@ -1,13 +1,18 @@
 package org.sopt.domain.post.entity;
+
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.sopt.domain.user.entity.User;
 import org.sopt.global.persistence.BaseEntity;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
-
 import java.time.LocalDateTime;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @SQLDelete(sql = "UPDATE post SET deleted_at = NOW() WHERE id = ?")
 @Where(clause = "deleted_at IS NULL")
@@ -31,8 +36,6 @@ public class Post extends BaseEntity {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    protected Post() {}
-
     public Post(String title, String content, User user, boolean isAnonymous, BoardType boardType) {
         this.title = title;
         this.content = content;
@@ -40,13 +43,6 @@ public class Post extends BaseEntity {
         this.isAnonymous = isAnonymous;
         this.boardType = boardType;
     }
-
-    public Long getId() { return id; }
-    public String getTitle() { return title; }
-    public String getContent() { return content; }
-    public boolean isAnonymous() { return isAnonymous; }
-    public BoardType getBoardType() { return boardType; }
-    public User getUser() { return user; }
 
     public void update(String title, String content) {
         this.title = title;

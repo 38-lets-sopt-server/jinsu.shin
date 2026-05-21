@@ -1,5 +1,10 @@
 package org.sopt.global.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum SuccessCode {
 
     // ===== COMMON =====
@@ -9,17 +14,4 @@ public enum SuccessCode {
 
     private final int status;
     private final String message;
-
-    SuccessCode(int status, String message) {
-        this.status = status;
-        this.message = message;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public String getMessage() {
-        return message;
-    }
 }

@@ -1,5 +1,6 @@
 package org.sopt.domain.post.service;
 
+import lombok.RequiredArgsConstructor;
 import org.sopt.domain.like.repository.LikeRepository;
 import org.sopt.domain.post.dto.request.CreatePostRequest;
 import org.sopt.domain.post.dto.request.UpdatePostRequest;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PostService {
 
     private static final int TITLE_MAX_LENGTH = 50;
@@ -28,12 +30,6 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
-
-    public PostService(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository) {
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
-        this.likeRepository = likeRepository;
-    }
 
     @Transactional
     public CreatePostResponse createPost(CreatePostRequest request) {

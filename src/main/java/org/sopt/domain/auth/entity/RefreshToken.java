@@ -6,9 +6,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "refresh_tokens")
 public class RefreshToken {
@@ -25,8 +30,6 @@ public class RefreshToken {
 
     @Column(nullable = false)
     private LocalDateTime expiresAt;
-
-    protected RefreshToken() {}
 
     private RefreshToken(Long userId, String token, LocalDateTime expiresAt) {
         this.userId = userId;
@@ -50,9 +53,4 @@ public class RefreshToken {
     public boolean isExpired() {
         return expiresAt.isBefore(LocalDateTime.now());
     }
-
-    public Long getId() { return id; }
-    public Long getUserId() { return userId; }
-    public String getToken() { return token; }
-    public LocalDateTime getExpiresAt() { return expiresAt; }
 }
