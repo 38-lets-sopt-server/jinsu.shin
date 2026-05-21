@@ -1,4 +1,4 @@
-package org.sopt.exception;
+package org.sopt.global.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.sopt.global.exception.BusinessException;
