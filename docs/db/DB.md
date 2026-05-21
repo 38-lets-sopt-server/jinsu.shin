@@ -24,13 +24,16 @@ post           ||--o{ likes          : "받음"
 | PK | id | BIGINT | NOT NULL | 사용자 식별자 (AUTO_INCREMENT) | 1 |
 |  | nickname | VARCHAR(255) | NULL | 닉네임 | 에이솝트 |
 |  | email | VARCHAR(255) | NULL | 이메일 주소 | sopt@example.com |
-|  | password | VARCHAR(255) | NULL | 비밀번호 (현재 평문 저장, 6차에서 BCrypt 해시로 전환 예정) | pw1234 |
+|  | password | VARCHAR(255) | NULL | BCrypt 로 해시된 비밀번호. OAuth 가입자는 NULL | $2a$10$abc... |
+|  | provider | VARCHAR(255) | NOT NULL | 가입 방식 (`LOCAL` / `KAKAO`) | LOCAL |
+|  | provider_id | VARCHAR(255) | NULL | OAuth 제공자 내부 사용자 ID. LOCAL 가입자는 NULL | 3829012345 |
 
 **Example Row**
 
-| id | nickname | email | password |
-|----|----------|-------|----------|
-| 1 | 에이솝트 | sopt@example.com | pw1234 |
+| id | nickname | email | password | provider | provider_id |
+|----|----------|-------|----------|----------|-------------|
+| 1 | 에이솝트 | sopt@example.com | $2a$10$abc... | LOCAL | NULL |
+| 2 | 진수 | jsshin@kakao.com | NULL | KAKAO | 3829012345 |
 
 ---
 
