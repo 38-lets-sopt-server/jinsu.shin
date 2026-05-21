@@ -42,8 +42,5 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-### Docs ###
-docs/
-
 ### Secrets ###
 src/main/resources/application.yml
