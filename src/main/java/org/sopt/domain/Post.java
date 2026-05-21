@@ -1,4 +1,5 @@
 package org.sopt.domain;
+import org.sopt.global.persistence.BaseEntity;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.SQLDelete;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @SQLDelete(sql = "UPDATE post SET deleted_at = NOW() WHERE id = ?")
 @Where(clause = "deleted_at IS NULL")
-public class Post extends BaseTimeEntity {
+public class Post extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

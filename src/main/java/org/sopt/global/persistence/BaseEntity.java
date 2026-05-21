@@ -1,4 +1,4 @@
-package org.sopt.domain;
+package org.sopt.global.persistence;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseTimeEntity {
+public abstract class BaseEntity {
 
     @CreatedDate
     private LocalDateTime createdAt;

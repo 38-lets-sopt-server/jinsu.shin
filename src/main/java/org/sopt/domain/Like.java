@@ -1,4 +1,5 @@
 package org.sopt.domain;
+import org.sopt.global.persistence.BaseEntity;
 
 import jakarta.persistence.*;
 
@@ -6,7 +7,7 @@ import jakarta.persistence.*;
 @Table(name = "likes", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "post_id"})
 })
-public class Like extends BaseTimeEntity {
+public class Like extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
