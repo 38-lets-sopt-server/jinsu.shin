@@ -1,7 +1,7 @@
-package org.sopt.repository;
+package org.sopt.domain.post.repository;
 
-import org.sopt.domain.BoardType;
-import org.sopt.domain.Post;
+import org.sopt.domain.post.entity.BoardType;
+import org.sopt.domain.post.entity.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

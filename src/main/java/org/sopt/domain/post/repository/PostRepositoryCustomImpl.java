@@ -1,10 +1,10 @@
-package org.sopt.repository;
+package org.sopt.domain.post.repository;
 import org.sopt.domain.user.entity.User;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.sopt.domain.Post;
-import org.sopt.domain.QPost;
+import org.sopt.domain.post.entity.Post;
+import org.sopt.domain.post.entity.QPost;
 import org.sopt.domain.user.entity.QUser;
 
 import java.util.List;

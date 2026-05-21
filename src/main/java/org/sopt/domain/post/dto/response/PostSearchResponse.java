@@ -1,7 +1,7 @@
-package org.sopt.dto.response;
+package org.sopt.domain.post.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.sopt.domain.Post;
+import org.sopt.domain.post.entity.Post;
 
 public record PostSearchResponse(
         @Schema(description = "게시글 ID", example = "1")

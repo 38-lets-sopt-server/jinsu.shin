@@ -1,20 +1,19 @@
-package org.sopt.service;
-import org.sopt.global.exception.BusinessException;
+package org.sopt.domain.post.service;
 
-import org.sopt.domain.BoardType;
-import org.sopt.domain.Post;
+import org.sopt.domain.post.dto.request.CreatePostRequest;
+import org.sopt.domain.post.dto.request.UpdatePostRequest;
+import org.sopt.domain.post.dto.response.CreatePostResponse;
+import org.sopt.domain.post.dto.response.PostDetailResponse;
+import org.sopt.domain.post.dto.response.PostSearchResponse;
+import org.sopt.domain.post.dto.response.PostSummaryResponse;
+import org.sopt.domain.post.entity.BoardType;
+import org.sopt.domain.post.entity.Post;
+import org.sopt.domain.post.repository.PostRepository;
 import org.sopt.domain.user.entity.User;
-import org.sopt.dto.request.CreatePostRequest;
-import org.sopt.dto.request.UpdatePostRequest;
-import org.sopt.dto.response.CreatePostResponse;
-import org.sopt.dto.response.PostDetailResponse;
-import org.sopt.dto.response.PostSearchResponse;
-import org.sopt.dto.response.PostSummaryResponse;
+import org.sopt.domain.user.repository.UserRepository;
+import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
 import org.sopt.repository.LikeRepository;
-import org.sopt.repository.PostRepository;
-import org.sopt.domain.user.repository.UserRepository;
-import org.sopt.validator.PostValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +23,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class PostService {
+
+    private static final int TITLE_MAX_LENGTH = 50;
+
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
@@ -34,10 +36,9 @@ public class PostService {
         this.likeRepository = likeRepository;
     }
 
-    // CREATE
     @Transactional
     public CreatePostResponse createPost(CreatePostRequest request) {
-        PostValidator.validatePost(request.title());
+        validateTitle(request.title());
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USR_404_001));
         boolean anonymous = request.isAnonymous() != null ? request.isAnonymous() : true;
@@ -46,7 +47,6 @@ public class PostService {
         return new CreatePostResponse(post.getId());
     }
 
-    // READ - 전체
     @Transactional(readOnly = true)
     public List<PostSummaryResponse> getAllPosts(BoardType boardType, int page, int size) {
         List<Post> posts = (boardType != null)
@@ -70,7 +70,6 @@ public class PostService {
                 .toList();
     }
 
-    // SEARCH
     @Transactional(readOnly = true)
     public List<PostSearchResponse> searchPosts(String title, String nickname) {
         return postRepository.searchPosts(title, nickname)
@@ -79,7 +78,6 @@ public class PostService {
                 .toList();
     }
 
-    // READ - 단건
     @Transactional(readOnly = true)
     public PostDetailResponse getPost(Long id) {
         Post post = postRepository.findByIdWithUser(id)
@@ -87,21 +85,28 @@ public class PostService {
         return PostDetailResponse.from(post);
     }
 
-    // UPDATE
     @Transactional
     public PostDetailResponse updatePost(Long id, UpdatePostRequest request) {
-        PostValidator.validatePost(request.title());
+        validateTitle(request.title());
         Post post = postRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POS_404_001));
         post.update(request.title(), request.content());
         return PostDetailResponse.from(post);
     }
 
-    // DELETE
     @Transactional
     public void deletePost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POS_404_001));
         postRepository.delete(post);
+    }
+
+    private static void validateTitle(String title) {
+        if (title == null || title.isBlank()) {
+            throw new BusinessException(ErrorCode.POS_400_001);
+        }
+        if (title.length() > TITLE_MAX_LENGTH) {
+            throw new BusinessException(ErrorCode.POS_400_002);
+        }
     }
 }

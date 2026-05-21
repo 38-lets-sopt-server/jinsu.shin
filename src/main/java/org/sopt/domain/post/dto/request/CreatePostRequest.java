@@ -1,7 +1,7 @@
-package org.sopt.dto.request;
+package org.sopt.domain.post.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.sopt.domain.BoardType;
+import org.sopt.domain.post.entity.BoardType;
 
 public record CreatePostRequest(
         @Schema(description = "작성자 ID", example = "1")
