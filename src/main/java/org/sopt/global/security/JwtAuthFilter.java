@@ -1,12 +1,14 @@
 package org.sopt.global.security;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.sopt.global.exception.BusinessException;
+import org.sopt.global.exception.ErrorCode;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +23,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
+    public static final String JWT_ERROR_CODE_ATTR = "jwt-error-code";
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtService jwtService;
@@ -40,8 +43,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         String.valueOf(userId), null, Collections.emptyList());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
+            } catch (TokenExpiredException e) {
+                request.setAttribute(JWT_ERROR_CODE_ATTR, ErrorCode.ATH_401_006);
             } catch (BusinessException | JWTVerificationException e) {
-                // 유효하지 않은 토큰이면 인증 정보 없이 통과 → permitAll 외 경로는 SecurityConfig 에서 401
+                // 유효하지 않은 토큰이면 인증 정보 없이 통과 → permitAll 외 경로는 EntryPoint 에서 401
             }
         }
 

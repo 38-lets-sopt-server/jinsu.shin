@@ -27,7 +27,14 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             HttpServletResponse response,
             AuthenticationException authException
     ) throws IOException {
-        ErrorCode errorCode = ErrorCode.ATH_401_003;
+        ErrorCode errorCode = (ErrorCode) request.getAttribute(JwtAuthFilter.JWT_ERROR_CODE_ATTR);
+        if (errorCode == null) {
+            errorCode = ErrorCode.ATH_401_003;
+        }
+        if (errorCode == ErrorCode.ATH_401_006) {
+            response.setHeader("Token-Expired", "true");
+        }
+
         ErrorMeta meta = new ErrorMeta(request.getRequestURI(), System.currentTimeMillis());
 
         response.setStatus(errorCode.getStatus());

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 public class JwtService {
@@ -31,6 +32,7 @@ public class JwtService {
     public String generateAccessToken(Long userId, String email) {
         Instant now = Instant.now();
         return JWT.create()
+                .withJWTId(UUID.randomUUID().toString())
                 .withSubject(String.valueOf(userId))
                 .withClaim("email", email)
                 .withIssuedAt(Date.from(now))
@@ -41,6 +43,7 @@ public class JwtService {
     public String generateRefreshToken(Long userId) {
         Instant now = Instant.now();
         return JWT.create()
+                .withJWTId(UUID.randomUUID().toString())
                 .withSubject(String.valueOf(userId))
                 .withIssuedAt(Date.from(now))
                 .withExpiresAt(Date.from(now.plusSeconds(refreshTokenExpiresInSeconds)))
@@ -57,6 +60,22 @@ public class JwtService {
         } catch (NumberFormatException e) {
             throw new BusinessException(ErrorCode.ATH_401_002);
         }
+    }
+
+    public String getJti(String token) {
+        DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
+        return jwt.getId();
+    }
+
+    public Date getExpiresAt(String token) {
+        DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
+        return jwt.getExpiresAt();
+    }
+
+    public long getRemainingSeconds(String token) {
+        Date expiresAt = getExpiresAt(token);
+        long remaining = (expiresAt.getTime() - System.currentTimeMillis()) / 1000;
+        return Math.max(0, remaining);
     }
 
     public long getRefreshTokenExpiresInSeconds() {
