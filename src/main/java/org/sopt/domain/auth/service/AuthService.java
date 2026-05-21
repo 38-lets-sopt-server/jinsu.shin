@@ -10,6 +10,7 @@ import org.sopt.domain.user.repository.UserRepository;
 import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
 import org.sopt.global.security.JwtService;
+import org.sopt.global.security.TokenBlacklistService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Transactional
     public TokenResponse login(String email, String password) {
@@ -71,5 +73,14 @@ public class AuthService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USR_404_001));
         return UserResponse.from(user);
+    }
+
+    @Transactional
+    public void logout(Long userId, String accessToken) {
+        refreshTokenRepository.deleteByUserId(userId);
+
+        String jti = jwtService.getJti(accessToken);
+        long remaining = jwtService.getRemainingSeconds(accessToken);
+        tokenBlacklistService.add(jti, remaining);
     }
 }

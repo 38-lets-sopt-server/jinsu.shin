@@ -27,6 +27,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtService jwtService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Override
     protected void doFilterInternal(
@@ -39,10 +40,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token = header.substring(BEARER_PREFIX.length()).trim();
             try {
                 Long userId = jwtService.verifyAndGetUserId(token);
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        String.valueOf(userId), null, Collections.emptyList());
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                String jti = jwtService.getJti(token);
+                if (tokenBlacklistService.isBlacklisted(jti)) {
+                    request.setAttribute(JWT_ERROR_CODE_ATTR, ErrorCode.ATH_401_004);
+                } else {
+                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                            String.valueOf(userId), null, Collections.emptyList());
+                    auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
             } catch (TokenExpiredException e) {
                 request.setAttribute(JWT_ERROR_CODE_ATTR, ErrorCode.ATH_401_006);
             } catch (BusinessException | JWTVerificationException e) {

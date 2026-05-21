@@ -12,6 +12,7 @@ import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
 import org.sopt.global.exception.SuccessCode;
 import org.sopt.global.response.ApiResponseBody;
+import org.sopt.global.security.LoginUserId;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -56,6 +57,22 @@ public class AuthController {
         String refreshToken = resolveBearerToken(authorization);
         TokenResponse tokens = authService.reissue(refreshToken);
         return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, tokens));
+    }
+
+    @Operation(summary = "로그아웃", description = "Refresh Token 을 DB 에서 삭제하고 현재 Access Token 을 블랙리스트에 등록합니다.")
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "로그아웃 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않음")
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponseBody<Void, Void>> logout(
+            @LoginUserId Long userId,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization
+    ) {
+        String accessToken = resolveBearerToken(authorization);
+        authService.logout(userId, accessToken);
+        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK));
     }
 
     @Operation(summary = "내 정보 조회 (Access Token 검증)")
