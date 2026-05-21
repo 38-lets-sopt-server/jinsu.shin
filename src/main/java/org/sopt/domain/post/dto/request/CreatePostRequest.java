@@ -4,9 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.sopt.domain.post.entity.BoardType;
 
 public record CreatePostRequest(
-        @Schema(description = "작성자 ID", example = "1")
-        Long userId,
-
         @Schema(description = "게시글 제목 (최대 50자)", example = "오늘 학식 뭐임")
         String title,
 

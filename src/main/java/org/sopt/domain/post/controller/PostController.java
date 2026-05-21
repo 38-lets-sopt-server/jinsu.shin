@@ -14,6 +14,7 @@ import org.sopt.domain.post.entity.BoardType;
 import org.sopt.domain.post.service.PostService;
 import org.sopt.global.exception.SuccessCode;
 import org.sopt.global.response.ApiResponseBody;
+import org.sopt.global.security.LoginUserId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,13 +33,15 @@ public class PostController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "게시글 작성 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "유효성 검증 실패 (제목 누락 또는 50자 초과)"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "존재하지 않는 userId")
     })
     @PostMapping
     public ResponseEntity<ApiResponseBody<CreatePostResponse, Void>> createPost(
+            @LoginUserId Long userId,
             @RequestBody CreatePostRequest request
     ) {
-        CreatePostResponse response = postService.createPost(request);
+        CreatePostResponse response = postService.createPost(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponseBody.created(SuccessCode.CREATED, response));
     }
@@ -82,33 +85,39 @@ public class PostController {
         return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, postService.getPost(postId)));
     }
 
-    @Operation(summary = "게시글 수정", description = "게시글 제목과 내용을 수정합니다.")
+    @Operation(summary = "게시글 수정", description = "게시글 제목과 내용을 수정합니다. 작성자 본인만 수정 가능합니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "수정 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "유효성 검증 실패 (제목 누락 또는 50자 초과)"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "작성자 본인이 아님"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
     })
     @PutMapping("/{postId}")
     public ResponseEntity<ApiResponseBody<PostDetailResponse, Void>> updatePost(
+            @LoginUserId Long userId,
             @Parameter(description = "수정할 게시글 ID", example = "1", required = true)
             @PathVariable Long postId,
             @RequestBody UpdatePostRequest request
     ) {
-        PostDetailResponse response = postService.updatePost(postId, request);
+        PostDetailResponse response = postService.updatePost(userId, postId, request);
         return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, response));
     }
 
-    @Operation(summary = "게시글 삭제", description = "게시글을 소프트 딜리트합니다.")
+    @Operation(summary = "게시글 삭제", description = "게시글을 소프트 딜리트합니다. 작성자 본인만 삭제 가능합니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "삭제 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "작성자 본인이 아님"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
     })
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(
+            @LoginUserId Long userId,
             @Parameter(description = "삭제할 게시글 ID", example = "1", required = true)
             @PathVariable Long postId
     ) {
-        postService.deletePost(postId);
+        postService.deletePost(userId, postId);
         return ResponseEntity.noContent().build();
     }
 }

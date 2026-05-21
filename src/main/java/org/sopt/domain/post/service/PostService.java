@@ -32,9 +32,9 @@ public class PostService {
     private final LikeRepository likeRepository;
 
     @Transactional
-    public CreatePostResponse createPost(CreatePostRequest request) {
+    public CreatePostResponse createPost(Long userId, CreatePostRequest request) {
         validateTitle(request.title());
-        User user = userRepository.findById(request.userId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USR_404_001));
         boolean anonymous = request.isAnonymous() != null ? request.isAnonymous() : true;
         Post post = new Post(request.title(), request.content(), user, anonymous, request.boardType());
@@ -69,18 +69,20 @@ public class PostService {
     }
 
     @Transactional
-    public PostDetailResponse updatePost(Long id, UpdatePostRequest request) {
+    public PostDetailResponse updatePost(Long userId, Long postId, UpdatePostRequest request) {
         validateTitle(request.title());
-        Post post = postRepository.findByIdWithUser(id)
+        Post post = postRepository.findByIdWithUser(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POS_404_001));
+        validateOwner(post, userId);
         post.update(request.title(), request.content());
         return PostDetailResponse.from(post);
     }
 
     @Transactional
-    public void deletePost(Long id) {
-        Post post = postRepository.findById(id)
+    public void deletePost(Long userId, Long postId) {
+        Post post = postRepository.findByIdWithUser(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POS_404_001));
+        validateOwner(post, userId);
         postRepository.delete(post);
     }
 
@@ -102,6 +104,12 @@ public class PostService {
         }
         if (title.length() > TITLE_MAX_LENGTH) {
             throw new BusinessException(ErrorCode.POS_400_002);
+        }
+    }
+
+    private static void validateOwner(Post post, Long userId) {
+        if (!post.getUser().getId().equals(userId)) {
+            throw new BusinessException(ErrorCode.ATH_403_001);
         }
     }
 }
