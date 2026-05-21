@@ -3,12 +3,12 @@ import org.sopt.global.exception.BusinessException;
 
 import org.sopt.global.security.JwtService;
 import org.sopt.domain.RefreshToken;
-import org.sopt.domain.User;
+import org.sopt.domain.user.entity.User;
 import org.sopt.dto.response.TokenResponse;
-import org.sopt.dto.response.UserResponse;
+import org.sopt.domain.user.dto.response.UserResponse;
 import org.sopt.global.exception.ErrorCode;
 import org.sopt.repository.RefreshTokenRepository;
-import org.sopt.repository.UserRepository;
+import org.sopt.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,4 +1,4 @@
-package org.sopt.dto.request;
+package org.sopt.domain.user.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

@@ -3,12 +3,12 @@ import org.sopt.global.exception.BusinessException;
 
 import org.sopt.domain.Like;
 import org.sopt.domain.Post;
-import org.sopt.domain.User;
+import org.sopt.domain.user.entity.User;
 import org.sopt.dto.request.LikeRequest;
 import org.sopt.global.exception.ErrorCode;
 import org.sopt.repository.LikeRepository;
 import org.sopt.repository.PostRepository;
-import org.sopt.repository.UserRepository;
+import org.sopt.domain.user.repository.UserRepository;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

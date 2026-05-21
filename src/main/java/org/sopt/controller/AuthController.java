@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.sopt.dto.response.TokenResponse;
-import org.sopt.dto.response.UserResponse;
+import org.sopt.domain.user.dto.response.UserResponse;
 import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
 import org.sopt.global.exception.SuccessCode;

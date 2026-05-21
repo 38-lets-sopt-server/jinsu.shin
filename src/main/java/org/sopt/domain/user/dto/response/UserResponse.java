@@ -1,7 +1,7 @@
-package org.sopt.dto.response;
+package org.sopt.domain.user.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.sopt.domain.User;
+import org.sopt.domain.user.entity.User;
 
 public record UserResponse(
         @Schema(description = "사용자 ID", example = "1")

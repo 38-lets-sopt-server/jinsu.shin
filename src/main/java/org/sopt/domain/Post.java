@@ -1,4 +1,5 @@
 package org.sopt.domain;
+import org.sopt.domain.user.entity.User;
 import org.sopt.global.persistence.BaseEntity;
 
 import jakarta.persistence.*;

@@ -1,13 +1,13 @@
-package org.sopt.controller;
+package org.sopt.domain.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.sopt.dto.request.UserCreateRequest;
-import org.sopt.dto.response.UserResponse;
+import org.sopt.domain.user.dto.request.UserCreateRequest;
+import org.sopt.domain.user.dto.response.UserResponse;
 import org.sopt.global.exception.SuccessCode;
 import org.sopt.global.response.ApiResponseBody;
-import org.sopt.service.UserService;
+import org.sopt.domain.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
