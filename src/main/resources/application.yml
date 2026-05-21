@@ -1,14 +1,11 @@
-server:
-  forward-headers-strategy: framework
-
 spring:
   application:
     name: assignment
 
   datasource:
-    url: jdbc:mysql://localhost:3306/assignment
-    username: {MySQL username}
-    password: {MySQL password}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -19,3 +16,12 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
     show-sql: true
+
+server:
+  forward-headers-strategy: framework
+
+security:
+  jwt:
+    secret: ${JWT_SECRET}
+    access-token-expires-in-seconds: 1800     # 30분
+    refresh-token-expires-in-seconds: 1209600 # 2주
