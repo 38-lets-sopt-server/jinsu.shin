@@ -24,7 +24,7 @@ public class UserService {
             throw new BusinessException(ErrorCode.USR_409_001);
         });
         String encodedPassword = passwordEncoder.encode(request.password());
-        User user = userRepository.save(new User(request.nickname(), request.email(), encodedPassword));
+        User user = userRepository.save(User.local(request.nickname(), request.email(), encodedPassword));
         return UserResponse.from(user);
     }
 
