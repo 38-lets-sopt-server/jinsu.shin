@@ -1,4 +1,4 @@
-package org.sopt.auth;
+package org.sopt.global.security;
 import org.sopt.global.exception.BusinessException;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;

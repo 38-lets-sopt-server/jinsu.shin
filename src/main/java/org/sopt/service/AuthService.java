@@ -1,7 +1,7 @@
 package org.sopt.service;
 import org.sopt.global.exception.BusinessException;
 
-import org.sopt.auth.JwtService;
+import org.sopt.global.security.JwtService;
 import org.sopt.domain.RefreshToken;
 import org.sopt.domain.User;
 import org.sopt.dto.response.TokenResponse;

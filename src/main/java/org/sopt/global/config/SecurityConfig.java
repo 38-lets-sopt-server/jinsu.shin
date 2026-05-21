@@ -1,6 +1,6 @@
 package org.sopt.global.config;
 
-import org.sopt.auth.JwtAuthFilter;
+import org.sopt.global.security.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
