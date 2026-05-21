@@ -5,7 +5,7 @@ import org.sopt.domain.RefreshToken;
 import org.sopt.domain.User;
 import org.sopt.dto.response.TokenResponse;
 import org.sopt.dto.response.UserResponse;
-import org.sopt.exception.ErrorCode;
+import org.sopt.global.exception.ErrorCode;
 import org.sopt.exception.NotFoundException;
 import org.sopt.exception.UnauthorizedException;
 import org.sopt.repository.RefreshTokenRepository;
@@ -33,10 +33,10 @@ public class AuthService {
     @Transactional
     public TokenResponse login(String email, String password) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UnauthorizedException(ErrorCode.AUTH_001));
+                .orElseThrow(() -> new UnauthorizedException(ErrorCode.ATH_401_001));
 
         if (!user.getPassword().equals(password)) {
-            throw new UnauthorizedException(ErrorCode.AUTH_001);
+            throw new UnauthorizedException(ErrorCode.ATH_401_001);
         }
 
         String accessToken = jwtService.generateAccessToken(user.getId(), user.getEmail());
@@ -56,15 +56,15 @@ public class AuthService {
         Long userId = jwtService.verifyAndGetUserId(refreshToken);
 
         RefreshToken stored = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new UnauthorizedException(ErrorCode.AUTH_002));
+                .orElseThrow(() -> new UnauthorizedException(ErrorCode.ATH_401_002));
 
         if (stored.isExpired()) {
             refreshTokenRepository.delete(stored);
-            throw new UnauthorizedException(ErrorCode.AUTH_002);
+            throw new UnauthorizedException(ErrorCode.ATH_401_002);
         }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UnauthorizedException(ErrorCode.AUTH_002));
+                .orElseThrow(() -> new UnauthorizedException(ErrorCode.ATH_401_002));
 
         String newAccessToken = jwtService.generateAccessToken(user.getId(), user.getEmail());
         String newRefreshToken = jwtService.generateRefreshToken(user.getId());
@@ -76,7 +76,7 @@ public class AuthService {
     @Transactional(readOnly = true)
     public UserResponse getUserById(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_001));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USR_404_001));
         return UserResponse.from(user);
     }
 }

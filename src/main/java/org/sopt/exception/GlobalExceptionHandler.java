@@ -1,6 +1,7 @@
 package org.sopt.exception;
 
 import org.sopt.dto.response.ApiResponse;
+import org.sopt.global.exception.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;

@@ -1,5 +1,7 @@
 package org.sopt.exception;
 
+import org.sopt.global.exception.ErrorCode;
+
 public class BadRequestException extends RuntimeException {
     private final ErrorCode errorCode;
 

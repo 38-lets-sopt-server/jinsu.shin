@@ -1,7 +1,7 @@
 package org.sopt.validator;
 
 import org.sopt.exception.BadRequestException;
-import org.sopt.exception.ErrorCode;
+import org.sopt.global.exception.ErrorCode;
 
 public class PostValidator {
     private static final int TITLE_MAX_LENGTH = 50;
@@ -10,10 +10,10 @@ public class PostValidator {
 
     public static void validateTitle(String title) {
         if (title == null || title.isBlank()) {
-            throw new BadRequestException(ErrorCode.POST_002);
+            throw new BadRequestException(ErrorCode.POS_400_001);
         }
         if (title.length() > TITLE_MAX_LENGTH) {
-            throw new BadRequestException(ErrorCode.POST_003);
+            throw new BadRequestException(ErrorCode.POS_400_002);
         }
     }
 

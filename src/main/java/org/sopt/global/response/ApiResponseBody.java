@@ -1,7 +1,7 @@
 package org.sopt.global.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.sopt.exception.ErrorCode;
+import org.sopt.global.exception.ErrorCode;
 import org.sopt.global.exception.SuccessCode;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -29,7 +29,7 @@ public record ApiResponseBody<T, M>(
     public static ApiResponseBody<Void, ErrorMeta> onFailure(ErrorCode errorCode, ErrorMeta errorMeta) {
         return new ApiResponseBody<>(
                 false,
-                errorCode.getStatus().value(),
+                errorCode.getStatus(),
                 errorCode.getMessage(),
                 null,
                 errorCode.getCode(),
@@ -40,7 +40,7 @@ public record ApiResponseBody<T, M>(
     public static ApiResponseBody<Void, ErrorMeta> onFailure(ErrorCode errorCode, String message, ErrorMeta errorMeta) {
         return new ApiResponseBody<>(
                 false,
-                errorCode.getStatus().value(),
+                errorCode.getStatus(),
                 message,
                 null,
                 errorCode.getCode(),

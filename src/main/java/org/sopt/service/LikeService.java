@@ -5,7 +5,7 @@ import org.sopt.domain.Post;
 import org.sopt.domain.User;
 import org.sopt.dto.request.LikeRequest;
 import org.sopt.exception.ConflictException;
-import org.sopt.exception.ErrorCode;
+import org.sopt.global.exception.ErrorCode;
 import org.sopt.exception.NotFoundException;
 import org.sopt.repository.LikeRepository;
 import org.sopt.repository.PostRepository;
@@ -30,19 +30,19 @@ public class LikeService {
     @Transactional
     public void addLike(Long postId, LikeRequest request) {
         User user = userRepository.findById(request.userId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_001));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USR_404_001));
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_001));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.POS_404_001));
 
         try {
             if (likeRepository.findByUserAndPost(user, post).isPresent()) {
-                throw new ConflictException(ErrorCode.LIKE_001);
+                throw new ConflictException(ErrorCode.LIK_409_001);
             }
             likeRepository.save(new Like(user, post));
         } catch (ObjectOptimisticLockingFailureException e) {
             // 낙관적 락 충돌 시 재시도 — 재시도 시 중복 감지 후 LIKE_001 반환
             if (likeRepository.findByUserAndPost(user, post).isPresent()) {
-                throw new ConflictException(ErrorCode.LIKE_001);
+                throw new ConflictException(ErrorCode.LIK_409_001);
             }
             likeRepository.save(new Like(user, post));
         }
@@ -51,12 +51,12 @@ public class LikeService {
     @Transactional
     public void cancelLike(Long postId, LikeRequest request) {
         User user = userRepository.findById(request.userId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_001));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USR_404_001));
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_001));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.POS_404_001));
 
         Like like = likeRepository.findByUserAndPost(user, post)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.LIKE_002));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.LIK_404_001));
 
         likeRepository.delete(like);
     }
