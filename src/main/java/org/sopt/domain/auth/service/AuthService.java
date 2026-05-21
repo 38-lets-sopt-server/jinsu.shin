@@ -1,13 +1,13 @@
-package org.sopt.service;
+package org.sopt.domain.auth.service;
 import org.sopt.global.exception.BusinessException;
 
 import org.sopt.global.security.JwtService;
-import org.sopt.domain.RefreshToken;
+import org.sopt.domain.auth.entity.RefreshToken;
 import org.sopt.domain.user.entity.User;
-import org.sopt.dto.response.TokenResponse;
+import org.sopt.domain.auth.dto.response.TokenResponse;
 import org.sopt.domain.user.dto.response.UserResponse;
 import org.sopt.global.exception.ErrorCode;
-import org.sopt.repository.RefreshTokenRepository;
+import org.sopt.domain.auth.repository.RefreshTokenRepository;
 import org.sopt.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
