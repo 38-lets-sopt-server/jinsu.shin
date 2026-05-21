@@ -1,10 +1,10 @@
 package org.sopt.domain.post.service;
 
+import org.sopt.domain.like.repository.LikeRepository;
 import org.sopt.domain.post.dto.request.CreatePostRequest;
 import org.sopt.domain.post.dto.request.UpdatePostRequest;
 import org.sopt.domain.post.dto.response.CreatePostResponse;
 import org.sopt.domain.post.dto.response.PostDetailResponse;
-import org.sopt.domain.post.dto.response.PostSearchResponse;
 import org.sopt.domain.post.dto.response.PostSummaryResponse;
 import org.sopt.domain.post.entity.BoardType;
 import org.sopt.domain.post.entity.Post;
@@ -13,7 +13,6 @@ import org.sopt.domain.user.entity.User;
 import org.sopt.domain.user.repository.UserRepository;
 import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
-import org.sopt.domain.like.repository.LikeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,29 +52,17 @@ public class PostService {
                 ? postRepository.findByBoardTypeWithUser(boardType)
                 : postRepository.findAllWithUser();
 
-        Map<Long, Long> likeCountMap = likeRepository.countGroupByPostId()
-                .stream()
-                .collect(Collectors.toMap(
-                        row -> (Long) row[0],
-                        row -> (Long) row[1]
-                ));
-
         int from = page * size;
         if (from >= posts.size()) {
             return List.of();
         }
         int to = Math.min(from + size, posts.size());
-        return posts.subList(from, to).stream()
-                .map(post -> PostSummaryResponse.from(post, likeCountMap.getOrDefault(post.getId(), 0L)))
-                .toList();
+        return toSummaries(posts.subList(from, to));
     }
 
     @Transactional(readOnly = true)
-    public List<PostSearchResponse> searchPosts(String title, String nickname) {
-        return postRepository.searchPosts(title, nickname)
-                .stream()
-                .map(PostSearchResponse::from)
-                .toList();
+    public List<PostSummaryResponse> searchPosts(String title, String nickname) {
+        return toSummaries(postRepository.searchPosts(title, nickname));
     }
 
     @Transactional(readOnly = true)
@@ -99,6 +86,18 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POS_404_001));
         postRepository.delete(post);
+    }
+
+    private List<PostSummaryResponse> toSummaries(List<Post> posts) {
+        Map<Long, Long> likeCountMap = likeRepository.countGroupByPostId()
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> (Long) row[1]
+                ));
+        return posts.stream()
+                .map(post -> PostSummaryResponse.from(post, likeCountMap.getOrDefault(post.getId(), 0L)))
+                .toList();
     }
 
     private static void validateTitle(String title) {

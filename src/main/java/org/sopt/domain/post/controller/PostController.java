@@ -4,16 +4,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.sopt.domain.post.entity.BoardType;
 import org.sopt.domain.post.dto.request.CreatePostRequest;
 import org.sopt.domain.post.dto.request.UpdatePostRequest;
 import org.sopt.domain.post.dto.response.CreatePostResponse;
 import org.sopt.domain.post.dto.response.PostDetailResponse;
-import org.sopt.domain.post.dto.response.PostSearchResponse;
 import org.sopt.domain.post.dto.response.PostSummaryResponse;
+import org.sopt.domain.post.entity.BoardType;
+import org.sopt.domain.post.service.PostService;
 import org.sopt.global.exception.SuccessCode;
 import org.sopt.global.response.ApiResponseBody;
-import org.sopt.domain.post.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +21,7 @@ import java.util.List;
 
 @Tag(name = "Post", description = "게시글 관련 API")
 @RestController
-@RequestMapping("/posts")
+@RequestMapping("/api/v1/posts")
 public class PostController {
     private final PostService postService;
 
@@ -45,35 +44,30 @@ public class PostController {
                 .body(ApiResponseBody.created(SuccessCode.CREATED, response));
     }
 
-    @Operation(summary = "게시글 목록 조회", description = "게시판 종류별 게시글 목록을 페이지네이션으로 조회합니다.")
+    @Operation(summary = "게시글 목록 조회 / 검색",
+            description = "title 또는 nickname 파라미터가 있으면 검색, 없으면 전체 목록을 페이지네이션으로 조회합니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 boardType 값")
     })
     @GetMapping
-    public ResponseEntity<ApiResponseBody<List<PostSummaryResponse>, Void>> getAllPosts(
+    public ResponseEntity<ApiResponseBody<List<PostSummaryResponse>, Void>> getPosts(
             @Parameter(description = "게시판 종류 (FREE, HOT, SECRET)", example = "FREE")
             @RequestParam(required = false) BoardType boardType,
             @Parameter(description = "페이지 번호 (0부터 시작)", example = "0")
             @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "페이지 크기", example = "10")
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, postService.getAllPosts(boardType, page, size)));
-    }
-
-    @Operation(summary = "게시글 제목 검색", description = "제목 키워드로 게시글을 검색합니다. 작성자 닉네임을 포함하여 반환합니다.")
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "검색 성공")
-    })
-    @GetMapping("/search")
-    public ResponseEntity<ApiResponseBody<List<PostSearchResponse>, Void>> searchPosts(
+            @RequestParam(defaultValue = "10") int size,
             @Parameter(description = "검색할 제목 키워드", example = "학식")
             @RequestParam(required = false) String title,
             @Parameter(description = "검색할 작성자 닉네임", example = "진수")
             @RequestParam(required = false) String nickname
     ) {
-        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, postService.searchPosts(title, nickname)));
+        boolean isSearch = (title != null && !title.isBlank()) || (nickname != null && !nickname.isBlank());
+        List<PostSummaryResponse> result = isSearch
+                ? postService.searchPosts(title, nickname)
+                : postService.getAllPosts(boardType, page, size);
+        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, result));
     }
 
     @Operation(summary = "게시글 단건 조회", description = "게시글 ID로 특정 게시글을 조회합니다.")
@@ -81,12 +75,12 @@ public class PostController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
     })
-    @GetMapping("/{id}")
+    @GetMapping("/{postId}")
     public ResponseEntity<ApiResponseBody<PostDetailResponse, Void>> getPost(
             @Parameter(description = "조회할 게시글 ID", example = "1", required = true)
-            @PathVariable Long id
+            @PathVariable Long postId
     ) {
-        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, postService.getPost(id)));
+        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, postService.getPost(postId)));
     }
 
     @Operation(summary = "게시글 수정", description = "게시글 제목과 내용을 수정합니다.")
@@ -95,13 +89,13 @@ public class PostController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "유효성 검증 실패 (제목 누락 또는 50자 초과)"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
     })
-    @PutMapping("/{id}")
+    @PutMapping("/{postId}")
     public ResponseEntity<ApiResponseBody<PostDetailResponse, Void>> updatePost(
             @Parameter(description = "수정할 게시글 ID", example = "1", required = true)
-            @PathVariable Long id,
+            @PathVariable Long postId,
             @RequestBody UpdatePostRequest request
     ) {
-        PostDetailResponse response = postService.updatePost(id, request);
+        PostDetailResponse response = postService.updatePost(postId, request);
         return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, response));
     }
 
@@ -110,12 +104,12 @@ public class PostController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "삭제 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(
             @Parameter(description = "삭제할 게시글 ID", example = "1", required = true)
-            @PathVariable Long id
+            @PathVariable Long postId
     ) {
-        postService.deletePost(id);
+        postService.deletePost(postId);
         return ResponseEntity.noContent().build();
     }
 }
