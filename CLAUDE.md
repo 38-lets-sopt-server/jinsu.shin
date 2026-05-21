@@ -168,6 +168,9 @@ public record ApiResponseBody<T, M>(
 ```java
 package org.sopt.global.exception;
 
+import lombok.Getter;
+
+@Getter
 public class BusinessException extends RuntimeException {
 
     private final ErrorCode errorCode;
@@ -181,10 +184,6 @@ public class BusinessException extends RuntimeException {
         super(errorCode.getMessage() + " - " + detail);
         this.errorCode = errorCode;
     }
-
-    public ErrorCode getErrorCode() {
-        return errorCode;
-    }
 }
 ```
 
@@ -196,8 +195,10 @@ public class BusinessException extends RuntimeException {
 package org.sopt.global.exception;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public enum ErrorCode {
 
     // ===== COMMON =====
@@ -221,12 +222,6 @@ public enum ErrorCode {
     private final int status;
     private final String code;
     private final String message;
-
-    ErrorCode(int status, String code, String message) {
-        this.status = status;
-        this.code = code;
-        this.message = message;
-    }
 }
 ```
 
