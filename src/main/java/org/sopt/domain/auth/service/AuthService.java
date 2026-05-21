@@ -24,6 +24,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final TokenBlacklistService tokenBlacklistService;
+    private final TokenIssuer tokenIssuer;
 
     @Transactional
     public TokenResponse login(String email, String password) {
@@ -34,16 +35,7 @@ public class AuthService {
             throw new BusinessException(ErrorCode.ATH_401_001);
         }
 
-        String accessToken = jwtService.generateAccessToken(user.getId(), user.getEmail());
-        String refreshToken = jwtService.generateRefreshToken(user.getId());
-
-        refreshTokenRepository.deleteByUserId(user.getId());
-        refreshTokenRepository.flush();
-        refreshTokenRepository.save(
-                RefreshToken.of(user.getId(), refreshToken, jwtService.getRefreshTokenExpiresInSeconds())
-        );
-
-        return TokenResponse.of(accessToken, refreshToken);
+        return tokenIssuer.issue(user);
     }
 
     @Transactional
