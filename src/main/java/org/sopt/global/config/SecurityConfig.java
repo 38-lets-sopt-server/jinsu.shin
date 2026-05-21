@@ -1,4 +1,4 @@
-package org.sopt.config;
+package org.sopt.global.config;
 
 import org.sopt.auth.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;

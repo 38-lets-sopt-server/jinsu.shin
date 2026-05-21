@@ -1,4 +1,4 @@
-package org.sopt.config;
+package org.sopt.global.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
