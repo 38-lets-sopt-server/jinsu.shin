@@ -4,8 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.sopt.dto.request.UserCreateRequest;
-import org.sopt.dto.response.ApiResponse;
 import org.sopt.dto.response.UserResponse;
+import org.sopt.global.exception.SuccessCode;
+import org.sopt.global.response.ApiResponseBody;
 import org.sopt.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,9 +32,9 @@ public class UserController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "409", description = "이미 가입된 이메일")
     })
     @PostMapping
-    public ResponseEntity<ApiResponse<UserResponse>> signup(@RequestBody UserCreateRequest request) {
+    public ResponseEntity<ApiResponseBody<UserResponse, Void>> signup(@RequestBody UserCreateRequest request) {
         UserResponse response = userService.join(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("회원가입 완료!", response));
+                .body(ApiResponseBody.created(SuccessCode.CREATED, response));
     }
 }

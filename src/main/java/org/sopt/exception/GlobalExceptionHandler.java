@@ -1,9 +1,10 @@
 package org.sopt.exception;
 
-import org.sopt.dto.response.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
-import org.springframework.http.HttpStatus;
+import org.sopt.global.response.ApiResponseBody;
+import org.sopt.global.response.ErrorMeta;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,28 +15,40 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBusiness(BusinessException e) {
+    public ResponseEntity<ApiResponseBody<Void, ErrorMeta>> handleBusiness(
+            BusinessException e, HttpServletRequest request
+    ) {
         ErrorCode errorCode = e.getErrorCode();
+        ErrorMeta meta = new ErrorMeta(request.getRequestURI(), System.currentTimeMillis());
         return ResponseEntity.status(errorCode.getStatus())
-                .body(ApiResponse.error(errorCode.getCode(), errorCode.getMessage()));
+                .body(ApiResponseBody.onFailure(errorCode, meta));
     }
 
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
-    public ResponseEntity<ApiResponse<Void>> handleOptimisticLocking(ObjectOptimisticLockingFailureException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ApiResponse.error("동시 요청으로 인해 처리에 실패했습니다. 다시 시도해주세요."));
+    public ResponseEntity<ApiResponseBody<Void, ErrorMeta>> handleOptimisticLocking(
+            ObjectOptimisticLockingFailureException e, HttpServletRequest request
+    ) {
+        ErrorMeta meta = new ErrorMeta(request.getRequestURI(), System.currentTimeMillis());
+        return ResponseEntity.status(ErrorCode.COM_409_001.getStatus())
+                .body(ApiResponseBody.onFailure(ErrorCode.COM_409_001, meta));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ApiResponse<Void>> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
+    public ResponseEntity<ApiResponseBody<Void, ErrorMeta>> handleTypeMismatch(
+            MethodArgumentTypeMismatchException e, HttpServletRequest request
+    ) {
         String message = e.getName() + "에 잘못된 값이 입력되었습니다: " + e.getValue();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(message));
+        ErrorMeta meta = new ErrorMeta(request.getRequestURI(), System.currentTimeMillis());
+        return ResponseEntity.status(ErrorCode.COM_400_001.getStatus())
+                .body(ApiResponseBody.onFailure(ErrorCode.COM_400_001, message, meta));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error("서버 내부 오류가 발생했습니다."));
+    public ResponseEntity<ApiResponseBody<Void, ErrorMeta>> handleException(
+            Exception e, HttpServletRequest request
+    ) {
+        ErrorMeta meta = new ErrorMeta(request.getRequestURI(), System.currentTimeMillis());
+        return ResponseEntity.status(ErrorCode.COM_500_001.getStatus())
+                .body(ApiResponseBody.onFailure(ErrorCode.COM_500_001, meta));
     }
 }
