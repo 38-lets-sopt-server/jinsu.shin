@@ -7,6 +7,7 @@ import org.sopt.domain.user.entity.User;
 import org.sopt.domain.user.repository.UserRepository;
 import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,13 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public UserResponse join(UserCreateRequest request) {
         userRepository.findByEmail(request.email()).ifPresent(u -> {
             throw new BusinessException(ErrorCode.USR_409_001);
         });
-        User user = userRepository.save(new User(request.nickname(), request.email(), request.password()));
+        String encodedPassword = passwordEncoder.encode(request.password());
+        User user = userRepository.save(new User(request.nickname(), request.email(), encodedPassword));
         return UserResponse.from(user);
     }
 

@@ -10,6 +10,7 @@ import org.sopt.domain.user.repository.UserRepository;
 import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
 import org.sopt.global.security.JwtService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +21,14 @@ public class AuthService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public TokenResponse login(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ATH_401_001));
 
-        if (!user.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new BusinessException(ErrorCode.ATH_401_001);
         }
 
