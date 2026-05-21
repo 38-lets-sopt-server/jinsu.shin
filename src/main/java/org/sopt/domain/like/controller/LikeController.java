@@ -3,6 +3,7 @@ package org.sopt.domain.like.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.like.service.LikeService;
@@ -21,6 +22,7 @@ public class LikeController {
     private final LikeService likeService;
 
     @Operation(summary = "좋아요 추가", description = "게시글에 좋아요를 추가합니다. 중복 좋아요는 불가합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "좋아요 추가 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
@@ -38,6 +40,7 @@ public class LikeController {
     }
 
     @Operation(summary = "좋아요 취소", description = "게시글의 좋아요를 취소합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "좋아요 취소 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),

@@ -3,6 +3,7 @@ package org.sopt.domain.post.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.post.dto.request.CreatePostRequest;
@@ -30,6 +31,7 @@ public class PostController {
     private final PostService postService;
 
     @Operation(summary = "게시글 작성", description = "새로운 게시글을 작성합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "게시글 작성 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "유효성 검증 실패 (제목 누락 또는 50자 초과)"),
@@ -86,6 +88,7 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 수정", description = "게시글 제목과 내용을 수정합니다. 작성자 본인만 수정 가능합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "수정 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "유효성 검증 실패 (제목 누락 또는 50자 초과)"),
@@ -105,6 +108,7 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 삭제", description = "게시글을 소프트 딜리트합니다. 작성자 본인만 삭제 가능합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "삭제 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
