@@ -13,7 +13,7 @@ import org.sopt.domain.user.entity.User;
 import org.sopt.domain.user.repository.UserRepository;
 import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
-import org.sopt.repository.LikeRepository;
+import org.sopt.domain.like.repository.LikeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

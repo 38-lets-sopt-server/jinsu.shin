@@ -1,13 +1,13 @@
-package org.sopt.controller;
+package org.sopt.domain.like.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.sopt.dto.request.LikeRequest;
+import org.sopt.domain.like.dto.request.LikeRequest;
 import org.sopt.global.exception.SuccessCode;
 import org.sopt.global.response.ApiResponseBody;
-import org.sopt.service.LikeService;
+import org.sopt.domain.like.service.LikeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

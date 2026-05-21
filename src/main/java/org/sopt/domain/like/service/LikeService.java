@@ -1,12 +1,12 @@
-package org.sopt.service;
+package org.sopt.domain.like.service;
 import org.sopt.global.exception.BusinessException;
 
-import org.sopt.domain.Like;
+import org.sopt.domain.like.entity.Like;
 import org.sopt.domain.post.entity.Post;
 import org.sopt.domain.user.entity.User;
-import org.sopt.dto.request.LikeRequest;
+import org.sopt.domain.like.dto.request.LikeRequest;
 import org.sopt.global.exception.ErrorCode;
-import org.sopt.repository.LikeRepository;
+import org.sopt.domain.like.repository.LikeRepository;
 import org.sopt.domain.post.repository.PostRepository;
 import org.sopt.domain.user.repository.UserRepository;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
