@@ -1,4 +1,5 @@
 package org.sopt.service;
+import org.sopt.global.exception.BusinessException;
 
 import org.sopt.domain.BoardType;
 import org.sopt.domain.Post;
@@ -10,7 +11,6 @@ import org.sopt.dto.response.PostDetailResponse;
 import org.sopt.dto.response.PostSearchResponse;
 import org.sopt.dto.response.PostSummaryResponse;
 import org.sopt.global.exception.ErrorCode;
-import org.sopt.exception.NotFoundException;
 import org.sopt.repository.LikeRepository;
 import org.sopt.repository.PostRepository;
 import org.sopt.repository.UserRepository;
@@ -39,7 +39,7 @@ public class PostService {
     public CreatePostResponse createPost(CreatePostRequest request) {
         PostValidator.validatePost(request.title());
         User user = userRepository.findById(request.userId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USR_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USR_404_001));
         boolean anonymous = request.isAnonymous() != null ? request.isAnonymous() : true;
         Post post = new Post(request.title(), request.content(), user, anonymous, request.boardType());
         postRepository.save(post);
@@ -83,7 +83,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostDetailResponse getPost(Long id) {
         Post post = postRepository.findByIdWithUser(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.POS_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POS_404_001));
         return PostDetailResponse.from(post);
     }
 
@@ -92,7 +92,7 @@ public class PostService {
     public PostDetailResponse updatePost(Long id, UpdatePostRequest request) {
         PostValidator.validatePost(request.title());
         Post post = postRepository.findByIdWithUser(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.POS_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POS_404_001));
         post.update(request.title(), request.content());
         return PostDetailResponse.from(post);
     }
@@ -101,7 +101,7 @@ public class PostService {
     @Transactional
     public void deletePost(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.POS_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POS_404_001));
         postRepository.delete(post);
     }
 }

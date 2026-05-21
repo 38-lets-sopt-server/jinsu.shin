@@ -1,11 +1,11 @@
 package org.sopt.auth;
+import org.sopt.global.exception.BusinessException;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.sopt.exception.UnauthorizedException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,7 +42,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         String.valueOf(userId), null, Collections.emptyList());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
-            } catch (UnauthorizedException | JWTVerificationException e) {
+            } catch (BusinessException | JWTVerificationException e) {
                 // 유효하지 않은 토큰이면 인증 정보 없이 통과시키고,
                 // permitAll 경로가 아닐 경우 SecurityConfig에서 401로 거부된다.
             }

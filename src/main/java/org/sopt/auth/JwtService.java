@@ -1,10 +1,10 @@
 package org.sopt.auth;
+import org.sopt.global.exception.BusinessException;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.sopt.global.exception.ErrorCode;
-import org.sopt.exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -49,13 +49,13 @@ public class JwtService {
 
     public Long verifyAndGetUserId(String token) {
         if (token == null || token.isBlank()) {
-            throw new UnauthorizedException(ErrorCode.ATH_401_002);
+            throw new BusinessException(ErrorCode.ATH_401_002);
         }
         DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
         try {
             return Long.parseLong(jwt.getSubject());
         } catch (NumberFormatException e) {
-            throw new UnauthorizedException(ErrorCode.ATH_401_002);
+            throw new BusinessException(ErrorCode.ATH_401_002);
         }
     }
 

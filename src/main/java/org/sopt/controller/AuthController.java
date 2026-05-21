@@ -1,11 +1,11 @@
 package org.sopt.controller;
+import org.sopt.global.exception.BusinessException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.sopt.global.exception.ErrorCode;
-import org.sopt.exception.UnauthorizedException;
 import org.sopt.dto.response.ApiResponse;
 import org.sopt.dto.response.TokenResponse;
 import org.sopt.dto.response.UserResponse;
@@ -68,7 +68,7 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> me(Authentication authentication) {
         if (authentication == null || authentication.getName() == null) {
-            throw new UnauthorizedException(ErrorCode.ATH_401_003);
+            throw new BusinessException(ErrorCode.ATH_401_003);
         }
         Long userId = Long.parseLong(authentication.getName());
         UserResponse response = authService.getUserById(userId);
@@ -77,7 +77,7 @@ public class AuthController {
 
     private String resolveBearerToken(String authorization) {
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-            throw new UnauthorizedException(ErrorCode.ATH_401_002);
+            throw new BusinessException(ErrorCode.ATH_401_002);
         }
         return authorization.substring("Bearer ".length()).trim();
     }

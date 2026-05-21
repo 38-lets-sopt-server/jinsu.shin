@@ -1,6 +1,6 @@
 package org.sopt.validator;
+import org.sopt.global.exception.BusinessException;
 
-import org.sopt.exception.BadRequestException;
 import org.sopt.global.exception.ErrorCode;
 
 public class PostValidator {
@@ -10,10 +10,10 @@ public class PostValidator {
 
     public static void validateTitle(String title) {
         if (title == null || title.isBlank()) {
-            throw new BadRequestException(ErrorCode.POS_400_001);
+            throw new BusinessException(ErrorCode.POS_400_001);
         }
         if (title.length() > TITLE_MAX_LENGTH) {
-            throw new BadRequestException(ErrorCode.POS_400_002);
+            throw new BusinessException(ErrorCode.POS_400_002);
         }
     }
 
