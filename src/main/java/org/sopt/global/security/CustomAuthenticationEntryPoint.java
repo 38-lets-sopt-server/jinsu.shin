@@ -19,6 +19,9 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
+    public static final String TOKEN_EXPIRED_HEADER = "Token-Expired";
+    private static final String TOKEN_EXPIRED_VALUE = "true";
+
     private final ObjectMapper objectMapper;
 
     @Override
@@ -32,7 +35,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             errorCode = ErrorCode.UNAUTHORIZED;
         }
         if (errorCode == ErrorCode.ACCESS_TOKEN_EXPIRED) {
-            response.setHeader("Token-Expired", "true");
+            response.setHeader(TOKEN_EXPIRED_HEADER, TOKEN_EXPIRED_VALUE);
         }
 
         ErrorMeta meta = new ErrorMeta(request.getRequestURI(), System.currentTimeMillis());
