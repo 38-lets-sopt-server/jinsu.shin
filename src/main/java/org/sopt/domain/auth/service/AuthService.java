@@ -71,8 +71,7 @@ public class AuthService {
     public void logout(Long userId, String accessToken) {
         refreshTokenRepository.deleteByUserId(userId);
 
-        String jti = jwtService.getJti(accessToken);
-        long remaining = jwtService.getRemainingSeconds(accessToken);
-        tokenBlacklistService.add(jti, remaining);
+        JwtService.BlacklistInfo blacklistInfo = jwtService.getBlacklistInfo(accessToken);
+        tokenBlacklistService.add(blacklistInfo.jti(), blacklistInfo.ttlSeconds());
     }
 }

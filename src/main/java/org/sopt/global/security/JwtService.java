@@ -67,15 +67,14 @@ public class JwtService {
         return jwt.getId();
     }
 
-    public Date getExpiresAt(String token) {
+    // 로그아웃 시 블랙리스트 등록에 필요한 jti 와 잔여 TTL 을 한 번의 검증/디코드로 함께 추출한다.
+    public BlacklistInfo getBlacklistInfo(String token) {
         DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
-        return jwt.getExpiresAt();
+        long remaining = (jwt.getExpiresAt().getTime() - System.currentTimeMillis()) / 1000;
+        return new BlacklistInfo(jwt.getId(), Math.max(0, remaining));
     }
 
-    public long getRemainingSeconds(String token) {
-        Date expiresAt = getExpiresAt(token);
-        long remaining = (expiresAt.getTime() - System.currentTimeMillis()) / 1000;
-        return Math.max(0, remaining);
+    public record BlacklistInfo(String jti, long ttlSeconds) {
     }
 
     public long getRefreshTokenExpiresInSeconds() {
