@@ -1,6 +1,7 @@
 package org.sopt.domain.auth.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,8 +35,8 @@ public class AuthController {
 
     @Operation(summary = "로그인 (Access Token + Refresh Token 발급)")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "로그인 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "이메일/비밀번호 불일치")
+            @ApiResponse(responseCode = "200", description = "로그인 성공"),
+            @ApiResponse(responseCode = "401", description = "이메일/비밀번호 불일치")
     })
     @PostMapping("/login")
     public ResponseEntity<ApiResponseBody<TokenResponse, Void>> login(
@@ -47,8 +48,8 @@ public class AuthController {
 
     @Operation(summary = "토큰 재발급", description = "Refresh Token으로 새 Access/Refresh Token을 발급받습니다.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "재발급 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Refresh Token이 유효하지 않거나 만료됨")
+            @ApiResponse(responseCode = "200", description = "재발급 성공"),
+            @ApiResponse(responseCode = "401", description = "Refresh Token이 유효하지 않거나 만료됨")
     })
     @PostMapping("/reissue")
     public ResponseEntity<ApiResponseBody<TokenResponse, Void>> reissue(
@@ -62,8 +63,8 @@ public class AuthController {
     @Operation(summary = "로그아웃", description = "Refresh Token 을 DB 에서 삭제하고 현재 Access Token 을 블랙리스트에 등록합니다.")
     @SecurityRequirement(name = "bearerAuth")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "로그아웃 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않음")
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않음")
     })
     @PostMapping("/logout")
     public ResponseEntity<ApiResponseBody<Void, Void>> logout(
@@ -78,8 +79,8 @@ public class AuthController {
     @Operation(summary = "내 정보 조회 (Access Token 검증)")
     @SecurityRequirement(name = "bearerAuth")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않음")
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않음")
     })
     @GetMapping("/me")
     public ResponseEntity<ApiResponseBody<UserResponse, Void>> me(Authentication authentication) {

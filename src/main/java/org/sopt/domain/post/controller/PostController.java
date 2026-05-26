@@ -2,6 +2,7 @@ package org.sopt.domain.post.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,10 +32,10 @@ public class PostController {
     @Operation(summary = "게시글 작성", description = "새로운 게시글을 작성합니다.")
     @SecurityRequirement(name = "bearerAuth")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "게시글 작성 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "유효성 검증 실패 (제목 누락 또는 50자 초과)"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "존재하지 않는 userId")
+            @ApiResponse(responseCode = "201", description = "게시글 작성 성공"),
+            @ApiResponse(responseCode = "400", description = "유효성 검증 실패 (제목 누락 또는 50자 초과)"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 userId")
     })
     @PostMapping
     public ResponseEntity<ApiResponseBody<CreatePostResponse, Void>> createPost(
@@ -49,8 +50,8 @@ public class PostController {
     @Operation(summary = "게시글 목록 조회 / 검색",
             description = "title 또는 nickname 파라미터가 있으면 검색, 없으면 전체 목록을 커서 기반 무한 스크롤로 조회합니다.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 boardType 값")
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 boardType 값")
     })
     @GetMapping
     public ResponseEntity<ApiResponseBody<PostFeedResponse, Void>> getPosts(
@@ -74,8 +75,8 @@ public class PostController {
 
     @Operation(summary = "게시글 단건 조회", description = "게시글 ID로 특정 게시글을 조회합니다.")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
     })
     @GetMapping("/{postId}")
     public ResponseEntity<ApiResponseBody<PostDetailResponse, Void>> getPost(
@@ -88,11 +89,11 @@ public class PostController {
     @Operation(summary = "게시글 수정", description = "게시글 제목과 내용을 수정합니다. 작성자 본인만 수정 가능합니다.")
     @SecurityRequirement(name = "bearerAuth")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "수정 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "유효성 검증 실패 (제목 누락 또는 50자 초과)"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "작성자 본인이 아님"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "400", description = "유효성 검증 실패 (제목 누락 또는 50자 초과)"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
+            @ApiResponse(responseCode = "403", description = "작성자 본인이 아님"),
+            @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
     })
     @PutMapping("/{postId}")
     public ResponseEntity<ApiResponseBody<PostDetailResponse, Void>> updatePost(
@@ -108,10 +109,10 @@ public class PostController {
     @Operation(summary = "게시글 삭제", description = "게시글을 소프트 딜리트합니다. 작성자 본인만 삭제 가능합니다.")
     @SecurityRequirement(name = "bearerAuth")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "삭제 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "작성자 본인이 아님"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
+            @ApiResponse(responseCode = "204", description = "삭제 성공"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
+            @ApiResponse(responseCode = "403", description = "작성자 본인이 아님"),
+            @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
     })
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(
