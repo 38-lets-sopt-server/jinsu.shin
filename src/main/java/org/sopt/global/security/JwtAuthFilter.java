@@ -39,13 +39,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith(BEARER_PREFIX)) {
             String token = header.substring(BEARER_PREFIX.length()).trim();
             try {
-                Long userId = jwtService.verifyAndGetUserId(token);
-                String jti = jwtService.getJti(token);
-                if (tokenBlacklistService.isBlacklisted(jti)) {
+                JwtService.TokenPayload payload = jwtService.parse(token);
+                if (tokenBlacklistService.isBlacklisted(payload.jti())) {
                     request.setAttribute(JWT_ERROR_CODE_ATTR, ErrorCode.BLACKLISTED_TOKEN);
                 } else {
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                            String.valueOf(userId), null, Collections.emptyList());
+                            String.valueOf(payload.userId()), null, Collections.emptyList());
                     auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }

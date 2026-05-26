@@ -62,9 +62,21 @@ public class JwtService {
         }
     }
 
-    public String getJti(String token) {
+    // 인증 필터용: 한 번의 검증/디코드로 userId 와 jti 를 함께 추출한다.
+    // 모든 인증 요청이 지나가는 핫패스이므로 토큰을 두 번 검증하지 않는다.
+    public TokenPayload parse(String token) {
+        if (token == null || token.isBlank()) {
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+        }
         DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
-        return jwt.getId();
+        try {
+            return new TokenPayload(Long.parseLong(jwt.getSubject()), jwt.getId());
+        } catch (NumberFormatException e) {
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+        }
+    }
+
+    public record TokenPayload(Long userId, String jti) {
     }
 
     // 로그아웃 시 블랙리스트 등록에 필요한 jti 와 잔여 TTL 을 한 번의 검증/디코드로 함께 추출한다.
