@@ -2,10 +2,12 @@ package org.sopt.domain.post.service;
 
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.like.repository.LikeRepository;
+import org.sopt.domain.like.repository.PostLikeCount;
 import org.sopt.domain.post.dto.request.CreatePostRequest;
 import org.sopt.domain.post.dto.request.UpdatePostRequest;
 import org.sopt.domain.post.dto.response.CreatePostResponse;
 import org.sopt.domain.post.dto.response.PostDetailResponse;
+import org.sopt.domain.post.dto.response.PostFeedResponse;
 import org.sopt.domain.post.dto.response.PostSummaryResponse;
 import org.sopt.domain.post.entity.BoardType;
 import org.sopt.domain.post.entity.Post;
@@ -14,6 +16,7 @@ import org.sopt.domain.user.entity.User;
 import org.sopt.domain.user.repository.UserRepository;
 import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,22 +46,16 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostSummaryResponse> getAllPosts(BoardType boardType, int page, int size) {
-        List<Post> posts = (boardType != null)
-                ? postRepository.findByBoardTypeWithUser(boardType)
-                : postRepository.findAllWithUser();
-
-        int from = page * size;
-        if (from >= posts.size()) {
-            return List.of();
-        }
-        int to = Math.min(from + size, posts.size());
-        return toSummaries(posts.subList(from, to));
+    public PostFeedResponse getFeed(BoardType boardType, Long cursor, int size) {
+        // hasNext 판정을 위해 size + 1 개를 가져온다(추가 COUNT 쿼리 없이 다음 페이지 유무 확인).
+        List<Post> fetched = postRepository.findFeed(cursor, boardType, PageRequest.of(0, size + 1));
+        return toFeed(fetched, size);
     }
 
     @Transactional(readOnly = true)
-    public List<PostSummaryResponse> searchPosts(String title, String nickname) {
-        return toSummaries(postRepository.searchPosts(title, nickname));
+    public PostFeedResponse searchFeed(String title, String nickname, Long cursor, int size) {
+        List<Post> fetched = postRepository.searchFeed(title, nickname, cursor, size + 1);
+        return toFeed(fetched, size);
     }
 
     @Transactional(readOnly = true)
@@ -86,13 +83,22 @@ public class PostService {
         postRepository.delete(post);
     }
 
+    // size + 1 개 조회 결과로 hasNext 와 nextCursor 를 계산하고, 응답 items 는 size 개로 자른다.
+    private PostFeedResponse toFeed(List<Post> fetched, int size) {
+        boolean hasNext = fetched.size() > size;
+        List<Post> page = hasNext ? fetched.subList(0, size) : fetched;
+        List<PostSummaryResponse> items = toSummaries(page);
+        Long nextCursor = hasNext ? page.get(page.size() - 1).getId() : null;
+        return PostFeedResponse.of(items, nextCursor, hasNext);
+    }
+
     private List<PostSummaryResponse> toSummaries(List<Post> posts) {
-        Map<Long, Long> likeCountMap = likeRepository.countGroupByPostId()
-                .stream()
-                .collect(Collectors.toMap(
-                        row -> (Long) row[0],
-                        row -> (Long) row[1]
-                ));
+        if (posts.isEmpty()) {
+            return List.of();
+        }
+        List<Long> postIds = posts.stream().map(Post::getId).toList();
+        Map<Long, Long> likeCountMap = likeRepository.countByPostIds(postIds).stream()
+                .collect(Collectors.toMap(PostLikeCount::postId, PostLikeCount::likeCount));
         return posts.stream()
                 .map(post -> PostSummaryResponse.from(post, likeCountMap.getOrDefault(post.getId(), 0L)))
                 .toList();

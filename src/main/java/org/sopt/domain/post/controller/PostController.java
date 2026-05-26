@@ -10,7 +10,7 @@ import org.sopt.domain.post.dto.request.CreatePostRequest;
 import org.sopt.domain.post.dto.request.UpdatePostRequest;
 import org.sopt.domain.post.dto.response.CreatePostResponse;
 import org.sopt.domain.post.dto.response.PostDetailResponse;
-import org.sopt.domain.post.dto.response.PostSummaryResponse;
+import org.sopt.domain.post.dto.response.PostFeedResponse;
 import org.sopt.domain.post.entity.BoardType;
 import org.sopt.domain.post.service.PostService;
 import org.sopt.global.exception.SuccessCode;
@@ -19,8 +19,6 @@ import org.sopt.global.security.LoginUserId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "Post", description = "게시글 관련 API")
 @RestController
@@ -49,18 +47,18 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 목록 조회 / 검색",
-            description = "title 또는 nickname 파라미터가 있으면 검색, 없으면 전체 목록을 페이지네이션으로 조회합니다.")
+            description = "title 또는 nickname 파라미터가 있으면 검색, 없으면 전체 목록을 커서 기반 무한 스크롤로 조회합니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 boardType 값")
     })
     @GetMapping
-    public ResponseEntity<ApiResponseBody<List<PostSummaryResponse>, Void>> getPosts(
+    public ResponseEntity<ApiResponseBody<PostFeedResponse, Void>> getPosts(
             @Parameter(description = "게시판 종류 (FREE, HOT, SECRET)", example = "FREE")
             @RequestParam(required = false) BoardType boardType,
-            @Parameter(description = "페이지 번호 (0부터 시작)", example = "0")
-            @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "페이지 크기", example = "10")
+            @Parameter(description = "커서 (마지막으로 받은 게시글 id, 첫 페이지는 생략)", example = "27")
+            @RequestParam(required = false) Long cursor,
+            @Parameter(description = "한 번에 가져올 게시글 수", example = "10")
             @RequestParam(defaultValue = "10") int size,
             @Parameter(description = "검색할 제목 키워드", example = "학식")
             @RequestParam(required = false) String title,
@@ -68,9 +66,9 @@ public class PostController {
             @RequestParam(required = false) String nickname
     ) {
         boolean isSearch = (title != null && !title.isBlank()) || (nickname != null && !nickname.isBlank());
-        List<PostSummaryResponse> result = isSearch
-                ? postService.searchPosts(title, nickname)
-                : postService.getAllPosts(boardType, page, size);
+        PostFeedResponse result = isSearch
+                ? postService.searchFeed(title, nickname, cursor, size)
+                : postService.getFeed(boardType, cursor, size);
         return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, result));
     }
 

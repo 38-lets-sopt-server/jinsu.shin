@@ -609,7 +609,7 @@ FE 가 카카오로부터 받은 authorization code 를 전달하면, 서버가 
 
 **GET /api/v1/posts**
 
-`title` 또는 `nickname` 파라미터가 있으면 검색, 없으면 전체 목록을 페이지네이션으로 조회한다. 비로그인도 호출 가능.
+`title` 또는 `nickname` 파라미터가 있으면 검색, 없으면 전체 목록을 커서 기반 무한 스크롤로 조회한다. 비로그인도 호출 가능.
 
 ### Path Parameter
 없음
@@ -619,8 +619,8 @@ FE 가 카카오로부터 받은 authorization code 를 전달하면, 서버가 
 | Name | Type | Required | Description | Example |
 |------|------|----------|-------------|---------|
 | boardType | String | N | 게시판 종류 필터 (`FREE`, `HOT`, `SECRET`). 미입력 시 전체 | "FREE" |
-| page | Integer | N | 페이지 번호 (기본값 0) | 0 |
-| size | Integer | N | 페이지당 게시글 수 (기본값 10) | 10 |
+| cursor | Long | N | 마지막으로 받은 게시글 ID. 첫 페이지는 생략(최신부터 조회) | 27 |
+| size | Integer | N | 한 번에 가져올 게시글 수 (기본값 10) | 10 |
 | title | String | N | 검색할 제목 키워드 (입력 시 검색 모드) | "학식" |
 | nickname | String | N | 검색할 작성자 닉네임 (입력 시 검색 모드) | "진수" |
 
@@ -635,7 +635,8 @@ FE 가 카카오로부터 받은 authorization code 를 전달하면, 서버가 
 
 ### Request Example
 ```
-GET /api/v1/posts?boardType=FREE&page=0&size=10
+GET /api/v1/posts?boardType=FREE&size=10
+GET /api/v1/posts?boardType=FREE&size=10&cursor=27
 GET /api/v1/posts?title=학식
 GET /api/v1/posts?nickname=진수
 ```
@@ -647,15 +648,17 @@ GET /api/v1/posts?nickname=진수
 | success | Boolean | Y | 성공 여부 | true |
 | status | Integer | Y | HTTP 상태 코드 | 200 |
 | message | String | Y | 결과 메시지 | "요청이 성공했습니다." |
-| data | List | Y | 게시글 목록 | [...] |
-| data[].id | Long | Y | 게시글 ID | 1 |
-| data[].title | String | Y | 제목 | "오늘 학식 뭐임" |
-| data[].content | String | N | 본문 | "돈까스래" |
-| data[].author | String | Y | 작성자 (익명이면 "익명") | "익명" |
-| data[].createdAt | String | Y | 작성 일시 | "2026-04-24T20:00:00" |
-| data[].isAnonymous | Boolean | Y | 익명 여부 | true |
-| data[].boardType | String | N | 게시판 종류 | "FREE" |
-| data[].likeCount | Long | Y | 좋아요 수 | 5 |
+| data.items | List | Y | 게시글 목록 | [...] |
+| data.items[].id | Long | Y | 게시글 ID | 1 |
+| data.items[].title | String | Y | 제목 | "오늘 학식 뭐임" |
+| data.items[].content | String | N | 본문 | "돈까스래" |
+| data.items[].author | String | Y | 작성자 (익명이면 "익명") | "익명" |
+| data.items[].createdAt | String | Y | 작성 일시 | "2026-04-24T20:00:00" |
+| data.items[].isAnonymous | Boolean | Y | 익명 여부 | true |
+| data.items[].boardType | String | N | 게시판 종류 | "FREE" |
+| data.items[].likeCount | Long | Y | 좋아요 수 | 5 |
+| data.nextCursor | Long | N | 다음 요청에 보낼 cursor (마지막 게시글 id). 더 없으면 null | 1 |
+| data.hasNext | Boolean | Y | 다음 페이지 존재 여부 | false |
 
 ### Success Response Example
 **200 OK**
@@ -664,18 +667,22 @@ GET /api/v1/posts?nickname=진수
   "success": true,
   "status": 200,
   "message": "요청이 성공했습니다.",
-  "data": [
-    {
-      "id": 1,
-      "title": "오늘 학식 뭐임",
-      "content": "돈까스래",
-      "author": "익명",
-      "createdAt": "2026-04-24T20:00:00",
-      "isAnonymous": true,
-      "boardType": "FREE",
-      "likeCount": 5
-    }
-  ]
+  "data": {
+    "items": [
+      {
+        "id": 1,
+        "title": "오늘 학식 뭐임",
+        "content": "돈까스래",
+        "author": "익명",
+        "createdAt": "2026-04-24T20:00:00",
+        "isAnonymous": true,
+        "boardType": "FREE",
+        "likeCount": 5
+      }
+    ],
+    "nextCursor": null,
+    "hasNext": false
+  }
 }
 ```
 
