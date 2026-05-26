@@ -52,13 +52,13 @@ public class JwtService {
 
     public Long verifyAndGetUserId(String token) {
         if (token == null || token.isBlank()) {
-            throw new BusinessException(ErrorCode.ATH_401_002);
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
         DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
         try {
             return Long.parseLong(jwt.getSubject());
         } catch (NumberFormatException e) {
-            throw new BusinessException(ErrorCode.ATH_401_002);
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
     }
 

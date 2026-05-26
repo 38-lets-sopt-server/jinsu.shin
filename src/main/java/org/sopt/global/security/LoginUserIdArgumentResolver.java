@@ -33,12 +33,12 @@ public class LoginUserIdArgumentResolver implements HandlerMethodArgumentResolve
                 || !authentication.isAuthenticated()
                 || authentication instanceof AnonymousAuthenticationToken
                 || authentication.getName() == null) {
-            throw new BusinessException(ErrorCode.ATH_401_003);
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
         }
         try {
             return Long.parseLong(authentication.getName());
         } catch (NumberFormatException e) {
-            throw new BusinessException(ErrorCode.ATH_401_003);
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
         }
     }
 }

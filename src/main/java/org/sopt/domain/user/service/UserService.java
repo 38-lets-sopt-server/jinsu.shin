@@ -21,7 +21,7 @@ public class UserService {
     @Transactional
     public UserResponse join(UserCreateRequest request) {
         userRepository.findByEmail(request.email()).ifPresent(u -> {
-            throw new BusinessException(ErrorCode.USR_409_001);
+            throw new BusinessException(ErrorCode.EMAIL_ALREADY_EXISTS);
         });
         String encodedPassword = passwordEncoder.encode(request.password());
         User user = userRepository.save(User.local(request.nickname(), request.email(), encodedPassword));
@@ -31,7 +31,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserResponse getById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USR_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         return UserResponse.from(user);
     }
 }

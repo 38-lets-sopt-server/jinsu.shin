@@ -24,18 +24,18 @@ public class LikeService {
     @Transactional
     public void addLike(Long postId, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USR_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POS_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
         try {
             if (likeRepository.findByUserAndPost(user, post).isPresent()) {
-                throw new BusinessException(ErrorCode.LIK_409_001);
+                throw new BusinessException(ErrorCode.ALREADY_LIKED);
             }
             likeRepository.save(new Like(user, post));
         } catch (ObjectOptimisticLockingFailureException e) {
             if (likeRepository.findByUserAndPost(user, post).isPresent()) {
-                throw new BusinessException(ErrorCode.LIK_409_001);
+                throw new BusinessException(ErrorCode.ALREADY_LIKED);
             }
             likeRepository.save(new Like(user, post));
         }
@@ -44,12 +44,12 @@ public class LikeService {
     @Transactional
     public void cancelLike(Long postId, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USR_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POS_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
         Like like = likeRepository.findByUserAndPost(user, post)
-                .orElseThrow(() -> new BusinessException(ErrorCode.LIK_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.LIKE_NOT_FOUND));
 
         likeRepository.delete(like);
     }

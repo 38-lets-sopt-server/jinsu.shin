@@ -62,7 +62,7 @@ public class OAuthService {
     private User registerKakaoUser(String email, String nickname, String providerId) {
         if (email != null) {
             userRepository.findByEmail(email).ifPresent(u -> {
-                throw new BusinessException(ErrorCode.ATH_409_002);
+                throw new BusinessException(ErrorCode.OAUTH_EMAIL_ALREADY_REGISTERED);
             });
         }
         return userRepository.save(User.oauth(nickname, email, Provider.KAKAO, providerId));
@@ -85,11 +85,11 @@ public class OAuthService {
                     .body(KakaoTokenResponse.class);
 
             if (response == null || response.accessToken() == null) {
-                throw new BusinessException(ErrorCode.ATH_401_005);
+                throw new BusinessException(ErrorCode.OAUTH_AUTHENTICATION_FAILED);
             }
             return response.accessToken();
         } catch (RestClientException e) {
-            throw new BusinessException(ErrorCode.ATH_500_001);
+            throw new BusinessException(ErrorCode.OAUTH_SERVER_ERROR);
         }
     }
 
@@ -102,11 +102,11 @@ public class OAuthService {
                     .body(KakaoUserInfoResponse.class);
 
             if (response == null || response.id() == null) {
-                throw new BusinessException(ErrorCode.ATH_401_005);
+                throw new BusinessException(ErrorCode.OAUTH_AUTHENTICATION_FAILED);
             }
             return response;
         } catch (RestClientException e) {
-            throw new BusinessException(ErrorCode.ATH_500_001);
+            throw new BusinessException(ErrorCode.OAUTH_SERVER_ERROR);
         }
     }
 }

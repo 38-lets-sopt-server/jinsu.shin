@@ -35,7 +35,7 @@ public class PostService {
     public CreatePostResponse createPost(Long userId, CreatePostRequest request) {
         validateTitle(request.title());
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USR_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         boolean anonymous = request.isAnonymous() != null ? request.isAnonymous() : true;
         Post post = new Post(request.title(), request.content(), user, anonymous, request.boardType());
         postRepository.save(post);
@@ -64,7 +64,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostDetailResponse getPost(Long id) {
         Post post = postRepository.findByIdWithUser(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POS_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
         return PostDetailResponse.from(post);
     }
 
@@ -72,7 +72,7 @@ public class PostService {
     public PostDetailResponse updatePost(Long userId, Long postId, UpdatePostRequest request) {
         validateTitle(request.title());
         Post post = postRepository.findByIdWithUser(postId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POS_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
         validateOwner(post, userId);
         post.update(request.title(), request.content());
         return PostDetailResponse.from(post);
@@ -81,7 +81,7 @@ public class PostService {
     @Transactional
     public void deletePost(Long userId, Long postId) {
         Post post = postRepository.findByIdWithUser(postId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POS_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
         validateOwner(post, userId);
         postRepository.delete(post);
     }
@@ -100,16 +100,16 @@ public class PostService {
 
     private static void validateTitle(String title) {
         if (title == null || title.isBlank()) {
-            throw new BusinessException(ErrorCode.POS_400_001);
+            throw new BusinessException(ErrorCode.POST_TITLE_REQUIRED);
         }
         if (title.length() > TITLE_MAX_LENGTH) {
-            throw new BusinessException(ErrorCode.POS_400_002);
+            throw new BusinessException(ErrorCode.POST_TITLE_TOO_LONG);
         }
     }
 
     private static void validateOwner(Post post, Long userId) {
         if (!post.getUser().getId().equals(userId)) {
-            throw new BusinessException(ErrorCode.ATH_403_001);
+            throw new BusinessException(ErrorCode.FORBIDDEN);
         }
     }
 }

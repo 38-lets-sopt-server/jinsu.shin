@@ -42,7 +42,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Long userId = jwtService.verifyAndGetUserId(token);
                 String jti = jwtService.getJti(token);
                 if (tokenBlacklistService.isBlacklisted(jti)) {
-                    request.setAttribute(JWT_ERROR_CODE_ATTR, ErrorCode.ATH_401_004);
+                    request.setAttribute(JWT_ERROR_CODE_ATTR, ErrorCode.BLACKLISTED_TOKEN);
                 } else {
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                             String.valueOf(userId), null, Collections.emptyList());
@@ -50,7 +50,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             } catch (TokenExpiredException e) {
-                request.setAttribute(JWT_ERROR_CODE_ATTR, ErrorCode.ATH_401_006);
+                request.setAttribute(JWT_ERROR_CODE_ATTR, ErrorCode.ACCESS_TOKEN_EXPIRED);
             } catch (BusinessException | JWTVerificationException e) {
                 // 유효하지 않은 토큰이면 인증 정보 없이 통과 → permitAll 외 경로는 EntryPoint 에서 401
             }

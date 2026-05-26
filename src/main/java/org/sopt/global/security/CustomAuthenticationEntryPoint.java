@@ -29,9 +29,9 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     ) throws IOException {
         ErrorCode errorCode = (ErrorCode) request.getAttribute(JwtAuthFilter.JWT_ERROR_CODE_ATTR);
         if (errorCode == null) {
-            errorCode = ErrorCode.ATH_401_003;
+            errorCode = ErrorCode.UNAUTHORIZED;
         }
-        if (errorCode == ErrorCode.ATH_401_006) {
+        if (errorCode == ErrorCode.ACCESS_TOKEN_EXPIRED) {
             response.setHeader("Token-Expired", "true");
         }
 

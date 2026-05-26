@@ -27,7 +27,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
             HttpServletResponse response,
             AccessDeniedException accessDeniedException
     ) throws IOException {
-        ErrorCode errorCode = ErrorCode.ATH_403_001;
+        ErrorCode errorCode = ErrorCode.FORBIDDEN;
         ErrorMeta meta = new ErrorMeta(request.getRequestURI(), System.currentTimeMillis());
 
         response.setStatus(errorCode.getStatus());

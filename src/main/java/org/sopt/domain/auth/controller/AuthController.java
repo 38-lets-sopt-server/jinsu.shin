@@ -84,7 +84,7 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<ApiResponseBody<UserResponse, Void>> me(Authentication authentication) {
         if (authentication == null || authentication.getName() == null) {
-            throw new BusinessException(ErrorCode.ATH_401_003);
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
         }
         Long userId = Long.parseLong(authentication.getName());
         UserResponse response = authService.getUserById(userId);
@@ -93,7 +93,7 @@ public class AuthController {
 
     private String resolveBearerToken(String authorization) {
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-            throw new BusinessException(ErrorCode.ATH_401_002);
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
         return authorization.substring("Bearer ".length()).trim();
     }

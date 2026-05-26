@@ -29,10 +29,10 @@ public class AuthService {
     @Transactional
     public TokenResponse login(String email, String password) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(ErrorCode.ATH_401_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_CREDENTIALS));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new BusinessException(ErrorCode.ATH_401_001);
+            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
         }
 
         return tokenIssuer.issue(user);
@@ -43,15 +43,15 @@ public class AuthService {
         Long userId = jwtService.verifyAndGetUserId(refreshToken);
 
         RefreshToken stored = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new BusinessException(ErrorCode.ATH_401_002));
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_TOKEN));
 
         if (stored.isExpired()) {
             refreshTokenRepository.delete(stored);
-            throw new BusinessException(ErrorCode.ATH_401_002);
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.ATH_401_002));
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_TOKEN));
 
         String newAccessToken = jwtService.generateAccessToken(user.getId(), user.getEmail());
         String newRefreshToken = jwtService.generateRefreshToken(user.getId());
@@ -63,7 +63,7 @@ public class AuthService {
     @Transactional(readOnly = true)
     public UserResponse getUserById(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USR_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         return UserResponse.from(user);
     }
 
