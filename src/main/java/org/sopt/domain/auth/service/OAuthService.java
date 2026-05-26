@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
@@ -42,11 +41,15 @@ public class OAuthService {
     @Value("${oauth.kakao.user-info-uri}")
     private String kakaoUserInfoUri;
 
-    @Transactional
     public TokenResponse loginWithKakao(String code) {
+        // 카카오 토큰 교환·유저 조회는 외부 HTTP I/O 이므로 트랜잭션 밖에서 수행한다.
+        // DB 트랜잭션·커넥션을 카카오 응답 대기 동안 잡지 않기 위함.
         String kakaoAccessToken = requestKakaoAccessToken(code);
         KakaoUserInfoResponse userInfo = requestKakaoUserInfo(kakaoAccessToken);
 
+        // 이하 DB 작업: 신규 유저 저장과 토큰 발급(tokenIssuer.issue 자체가 @Transactional)은
+        // 각자 짧은 트랜잭션으로 처리된다. 동일 (provider, providerId) 중복 생성은
+        // 트랜잭션 격리가 아니라 users 테이블의 유니크 제약으로 막는다.
         String providerId = String.valueOf(userInfo.id());
         String email = userInfo.kakaoAccount() != null ? userInfo.kakaoAccount().email() : null;
         String nickname = userInfo.kakaoAccount() != null && userInfo.kakaoAccount().profile() != null
