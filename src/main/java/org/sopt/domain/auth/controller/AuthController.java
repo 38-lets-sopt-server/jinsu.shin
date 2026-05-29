@@ -2,7 +2,6 @@ package org.sopt.domain.auth.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +14,8 @@ import org.sopt.global.exception.ErrorCode;
 import org.sopt.global.exception.SuccessCode;
 import org.sopt.global.response.ApiResponseBody;
 import org.sopt.global.security.LoginUserId;
+import org.sopt.global.swagger.CustomExceptionDescription;
+import org.sopt.global.swagger.SwaggerResponseDescription;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -34,10 +35,8 @@ public class AuthController {
     private final AuthService authService;
 
     @Operation(summary = "로그인 (Access Token + Refresh Token 발급)")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인 성공"),
-            @ApiResponse(responseCode = "401", description = "이메일/비밀번호 불일치")
-    })
+    @ApiResponse(responseCode = "200", description = "로그인 성공")
+    @CustomExceptionDescription(SwaggerResponseDescription.LOGIN)
     @PostMapping("/login")
     public ResponseEntity<ApiResponseBody<TokenResponse, Void>> login(
             @RequestBody LoginRequest request
@@ -47,10 +46,8 @@ public class AuthController {
     }
 
     @Operation(summary = "토큰 재발급", description = "Refresh Token으로 새 Access/Refresh Token을 발급받습니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "재발급 성공"),
-            @ApiResponse(responseCode = "401", description = "Refresh Token이 유효하지 않거나 만료됨")
-    })
+    @ApiResponse(responseCode = "200", description = "재발급 성공")
+    @CustomExceptionDescription(SwaggerResponseDescription.REISSUE)
     @PostMapping("/reissue")
     public ResponseEntity<ApiResponseBody<TokenResponse, Void>> reissue(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization
@@ -62,10 +59,8 @@ public class AuthController {
 
     @Operation(summary = "로그아웃", description = "Refresh Token 을 DB 에서 삭제하고 현재 Access Token 을 블랙리스트에 등록합니다.")
     @SecurityRequirement(name = "bearerAuth")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그아웃 성공"),
-            @ApiResponse(responseCode = "401", description = "인증되지 않음")
-    })
+    @ApiResponse(responseCode = "200", description = "로그아웃 성공")
+    @CustomExceptionDescription(SwaggerResponseDescription.LOGOUT)
     @PostMapping("/logout")
     public ResponseEntity<ApiResponseBody<Void, Void>> logout(
             @LoginUserId Long userId,
@@ -78,10 +73,8 @@ public class AuthController {
 
     @Operation(summary = "내 정보 조회 (Access Token 검증)")
     @SecurityRequirement(name = "bearerAuth")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "401", description = "인증되지 않음")
-    })
+    @ApiResponse(responseCode = "200", description = "조회 성공")
+    @CustomExceptionDescription(SwaggerResponseDescription.GET_MY_INFO)
     @GetMapping("/me")
     public ResponseEntity<ApiResponseBody<UserResponse, Void>> me(Authentication authentication) {
         if (authentication == null || authentication.getName() == null) {
