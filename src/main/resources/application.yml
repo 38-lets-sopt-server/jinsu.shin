@@ -51,3 +51,15 @@ spring:
   threads:
     virtual:
       enabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: loadtest
+  datasource:
+    hikari:
+      maximum-pool-size: 100
+
+loadtest:
+  delay-ms: 100
