@@ -10,6 +10,8 @@ import org.sopt.domain.user.repository.UserRepository;
 import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
 import org.sopt.global.security.JwtService;
+import org.sopt.global.security.TokenBlacklistService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,26 +22,20 @@ public class AuthService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenBlacklistService tokenBlacklistService;
+    private final TokenIssuer tokenIssuer;
 
     @Transactional
     public TokenResponse login(String email, String password) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(ErrorCode.ATH_401_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_CREDENTIALS));
 
-        if (!user.getPassword().equals(password)) {
-            throw new BusinessException(ErrorCode.ATH_401_001);
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
         }
 
-        String accessToken = jwtService.generateAccessToken(user.getId(), user.getEmail());
-        String refreshToken = jwtService.generateRefreshToken(user.getId());
-
-        refreshTokenRepository.deleteByUserId(user.getId());
-        refreshTokenRepository.flush();
-        refreshTokenRepository.save(
-                RefreshToken.of(user.getId(), refreshToken, jwtService.getRefreshTokenExpiresInSeconds())
-        );
-
-        return TokenResponse.of(accessToken, refreshToken);
+        return tokenIssuer.issue(user);
     }
 
     @Transactional
@@ -47,15 +43,15 @@ public class AuthService {
         Long userId = jwtService.verifyAndGetUserId(refreshToken);
 
         RefreshToken stored = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new BusinessException(ErrorCode.ATH_401_002));
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_TOKEN));
 
         if (stored.isExpired()) {
             refreshTokenRepository.delete(stored);
-            throw new BusinessException(ErrorCode.ATH_401_002);
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.ATH_401_002));
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_TOKEN));
 
         String newAccessToken = jwtService.generateAccessToken(user.getId(), user.getEmail());
         String newRefreshToken = jwtService.generateRefreshToken(user.getId());
@@ -67,7 +63,15 @@ public class AuthService {
     @Transactional(readOnly = true)
     public UserResponse getUserById(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USR_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         return UserResponse.from(user);
+    }
+
+    @Transactional
+    public void logout(Long userId, String accessToken) {
+        refreshTokenRepository.deleteByUserId(userId);
+
+        JwtService.BlacklistInfo blacklistInfo = jwtService.getBlacklistInfo(accessToken);
+        tokenBlacklistService.add(blacklistInfo.jti(), blacklistInfo.ttlSeconds());
     }
 }

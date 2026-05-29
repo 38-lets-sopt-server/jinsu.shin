@@ -1,5 +1,4 @@
 package org.sopt.domain.post.repository;
-import org.sopt.domain.user.entity.User;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -18,7 +17,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     }
 
     @Override
-    public List<Post> searchPosts(String title, String nickname) {
+    public List<Post> searchFeed(String title, String nickname, Long cursor, int limit) {
         QPost post = QPost.post;
         QUser user = QUser.user;
 
@@ -27,9 +26,16 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .join(post.user, user).fetchJoin()
                 .where(
                         titleContains(title),
-                        nicknameContains(nickname)
+                        nicknameContains(nickname),
+                        idLessThan(cursor)
                 )
+                .orderBy(post.id.desc())
+                .limit(limit)
                 .fetch();
+    }
+
+    private BooleanExpression idLessThan(Long cursor) {
+        return (cursor != null) ? QPost.post.id.lt(cursor) : null;
     }
 
     private BooleanExpression titleContains(String title) {

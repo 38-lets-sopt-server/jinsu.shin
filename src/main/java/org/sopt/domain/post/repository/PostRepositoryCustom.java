@@ -5,5 +5,5 @@ import org.sopt.domain.post.entity.Post;
 import java.util.List;
 
 public interface PostRepositoryCustom {
-    List<Post> searchPosts(String title, String nickname);
+    List<Post> searchFeed(String title, String nickname, Long cursor, int limit);
 }

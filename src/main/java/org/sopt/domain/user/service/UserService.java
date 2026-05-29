@@ -7,6 +7,7 @@ import org.sopt.domain.user.entity.User;
 import org.sopt.domain.user.repository.UserRepository;
 import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,20 +16,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public UserResponse join(UserCreateRequest request) {
         userRepository.findByEmail(request.email()).ifPresent(u -> {
-            throw new BusinessException(ErrorCode.USR_409_001);
+            throw new BusinessException(ErrorCode.EMAIL_ALREADY_EXISTS);
         });
-        User user = userRepository.save(new User(request.nickname(), request.email(), request.password()));
+        String encodedPassword = passwordEncoder.encode(request.password());
+        User user = userRepository.save(User.local(request.nickname(), request.email(), encodedPassword));
         return UserResponse.from(user);
     }
 
     @Transactional(readOnly = true)
     public UserResponse getById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USR_404_001));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         return UserResponse.from(user);
     }
 }

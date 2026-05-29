@@ -29,8 +29,8 @@ public class GlobalExceptionHandler {
             ObjectOptimisticLockingFailureException e, HttpServletRequest request
     ) {
         ErrorMeta meta = new ErrorMeta(request.getRequestURI(), System.currentTimeMillis());
-        return ResponseEntity.status(ErrorCode.COM_409_001.getStatus())
-                .body(ApiResponseBody.onFailure(ErrorCode.COM_409_001, meta));
+        return ResponseEntity.status(ErrorCode.CONCURRENT_REQUEST.getStatus())
+                .body(ApiResponseBody.onFailure(ErrorCode.CONCURRENT_REQUEST, meta));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -39,8 +39,8 @@ public class GlobalExceptionHandler {
     ) {
         String message = e.getName() + "에 잘못된 값이 입력되었습니다: " + e.getValue();
         ErrorMeta meta = new ErrorMeta(request.getRequestURI(), System.currentTimeMillis());
-        return ResponseEntity.status(ErrorCode.COM_400_001.getStatus())
-                .body(ApiResponseBody.onFailure(ErrorCode.COM_400_001, message, meta));
+        return ResponseEntity.status(ErrorCode.INVALID_INPUT.getStatus())
+                .body(ApiResponseBody.onFailure(ErrorCode.INVALID_INPUT, message, meta));
     }
 
     @ExceptionHandler(Exception.class)
@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
             Exception e, HttpServletRequest request
     ) {
         ErrorMeta meta = new ErrorMeta(request.getRequestURI(), System.currentTimeMillis());
-        return ResponseEntity.status(ErrorCode.COM_500_001.getStatus())
-                .body(ApiResponseBody.onFailure(ErrorCode.COM_500_001, meta));
+        return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus())
+                .body(ApiResponseBody.onFailure(ErrorCode.INTERNAL_SERVER_ERROR, meta));
     }
 }
