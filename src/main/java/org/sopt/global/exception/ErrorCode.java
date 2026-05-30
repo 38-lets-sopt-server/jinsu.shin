@@ -28,6 +28,7 @@ public enum ErrorCode {
     BLACKLISTED_TOKEN(401, "ATH_401_004", "만료되었거나 로그아웃된 토큰입니다."),
     OAUTH_AUTHENTICATION_FAILED(401, "ATH_401_005", "OAuth 인증에 실패했습니다."),
     ACCESS_TOKEN_EXPIRED(401, "ATH_401_006", "Access Token이 만료되었습니다."),
+    REFRESH_TOKEN_EXPIRED(401, "ATH_401_007", "Refresh Token이 만료되었습니다."),
     FORBIDDEN(403, "ATH_403_001", "권한이 없습니다."),
     OAUTH_EMAIL_ALREADY_REGISTERED(409, "ATH_409_002", "이미 가입된 이메일입니다. 기존 계정으로 로그인해주세요."),
     OAUTH_SERVER_ERROR(500, "ATH_500_001", "외부 OAuth 서버 통신에 실패했습니다."),

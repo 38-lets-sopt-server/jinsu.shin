@@ -19,13 +19,14 @@ import static org.sopt.global.exception.ErrorCode.OAUTH_SERVER_ERROR;
 import static org.sopt.global.exception.ErrorCode.POST_NOT_FOUND;
 import static org.sopt.global.exception.ErrorCode.POST_TITLE_REQUIRED;
 import static org.sopt.global.exception.ErrorCode.POST_TITLE_TOO_LONG;
+import static org.sopt.global.exception.ErrorCode.REFRESH_TOKEN_EXPIRED;
 import static org.sopt.global.exception.ErrorCode.UNAUTHORIZED;
 import static org.sopt.global.exception.ErrorCode.USER_NOT_FOUND;
 
 public enum SwaggerResponseDescription {
 
     LOGIN(Set.of(INVALID_CREDENTIALS)),
-    REISSUE(Set.of(INVALID_TOKEN)),
+    REISSUE(Set.of(INVALID_TOKEN, REFRESH_TOKEN_EXPIRED, USER_NOT_FOUND)),
     LOGOUT(Set.of(UNAUTHORIZED, INVALID_TOKEN)),
     GET_MY_INFO(Set.of(UNAUTHORIZED, USER_NOT_FOUND)),
     KAKAO_LOGIN(Set.of(OAUTH_AUTHENTICATION_FAILED, OAUTH_EMAIL_ALREADY_REGISTERED, OAUTH_SERVER_ERROR)),

@@ -1,5 +1,6 @@
 package org.sopt.domain.auth.service;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.auth.dto.response.TokenResponse;
 import org.sopt.domain.auth.entity.RefreshToken;
@@ -40,18 +41,23 @@ public class AuthService {
 
     @Transactional
     public TokenResponse reissue(String refreshToken) {
-        Long userId = jwtService.verifyAndGetUserId(refreshToken);
+        Long userId;
+        try {
+            userId = jwtService.verifyAndGetUserId(refreshToken);
+        } catch (TokenExpiredException e) {
+            throw new BusinessException(ErrorCode.REFRESH_TOKEN_EXPIRED);
+        }
 
         RefreshToken stored = refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_TOKEN));
 
         if (stored.isExpired()) {
             refreshTokenRepository.delete(stored);
-            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+            throw new BusinessException(ErrorCode.REFRESH_TOKEN_EXPIRED);
         }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_TOKEN));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         String newAccessToken = jwtService.generateAccessToken(user.getId(), user.getEmail());
         String newRefreshToken = jwtService.generateRefreshToken(user.getId());
