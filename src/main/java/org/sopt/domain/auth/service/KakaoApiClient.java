@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
@@ -41,6 +42,8 @@ public class KakaoApiClient {
                 throw new BusinessException(ErrorCode.OAUTH_AUTHENTICATION_FAILED);
             }
             return response.accessToken();
+        } catch (HttpClientErrorException e) {
+            throw new BusinessException(ErrorCode.OAUTH_AUTHENTICATION_FAILED);
         } catch (RestClientException e) {
             throw new BusinessException(ErrorCode.OAUTH_SERVER_ERROR);
         }
@@ -58,6 +61,8 @@ public class KakaoApiClient {
                 throw new BusinessException(ErrorCode.OAUTH_AUTHENTICATION_FAILED);
             }
             return response;
+        } catch (HttpClientErrorException e) {
+            throw new BusinessException(ErrorCode.OAUTH_AUTHENTICATION_FAILED);
         } catch (RestClientException e) {
             throw new BusinessException(ErrorCode.OAUTH_SERVER_ERROR);
         }
