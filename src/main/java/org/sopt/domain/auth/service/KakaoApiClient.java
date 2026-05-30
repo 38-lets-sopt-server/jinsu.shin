@@ -5,6 +5,7 @@ import org.sopt.domain.auth.dto.oauth.KakaoTokenResponse;
 import org.sopt.domain.auth.dto.oauth.KakaoUserInfoResponse;
 import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
+import org.sopt.global.security.BearerTokenResolver;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -49,7 +50,7 @@ public class KakaoApiClient {
         try {
             KakaoUserInfoResponse response = restClient.get()
                     .uri(properties.userInfoUri())
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                    .header(HttpHeaders.AUTHORIZATION, BearerTokenResolver.BEARER_PREFIX + accessToken)
                     .retrieve()
                     .body(KakaoUserInfoResponse.class);
 

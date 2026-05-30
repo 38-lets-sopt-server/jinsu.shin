@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public final class BearerTokenResolver {
 
-    private static final String BEARER_PREFIX = "Bearer ";
+    public static final String BEARER_PREFIX = "Bearer ";
 
     private BearerTokenResolver() {
     }
