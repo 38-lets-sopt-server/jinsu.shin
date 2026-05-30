@@ -1,6 +1,7 @@
 package org.sopt.global.config;
 
 import lombok.RequiredArgsConstructor;
+import org.sopt.global.security.BearerTokenArgumentResolver;
 import org.sopt.global.security.LoginUserIdArgumentResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -13,9 +14,11 @@ import java.util.List;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private final LoginUserIdArgumentResolver loginUserIdArgumentResolver;
+    private final BearerTokenArgumentResolver bearerTokenArgumentResolver;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(loginUserIdArgumentResolver);
+        resolvers.add(bearerTokenArgumentResolver);
     }
 }

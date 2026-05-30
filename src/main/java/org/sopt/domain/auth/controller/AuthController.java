@@ -12,16 +12,15 @@ import org.sopt.domain.user.dto.response.UserResponse;
 import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
 import org.sopt.global.response.ApiResponseBody;
+import org.sopt.global.security.BearerToken;
 import org.sopt.global.security.LoginUserId;
 import org.sopt.global.swagger.CustomExceptionDescription;
 import org.sopt.global.swagger.SwaggerResponseDescription;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,9 +48,8 @@ public class AuthController {
     @CustomExceptionDescription(SwaggerResponseDescription.REISSUE)
     @PostMapping("/reissue")
     public ResponseEntity<ApiResponseBody<TokenResponse, Void>> reissue(
-            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization
+            @BearerToken String refreshToken
     ) {
-        String refreshToken = resolveBearerToken(authorization);
         TokenResponse tokens = authService.reissue(refreshToken);
         return ResponseEntity.ok(ApiResponseBody.ok(tokens));
     }
@@ -63,9 +61,8 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<ApiResponseBody<Void, Void>> logout(
             @LoginUserId Long userId,
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization
+            @BearerToken String accessToken
     ) {
-        String accessToken = resolveBearerToken(authorization);
         authService.logout(userId, accessToken);
         return ResponseEntity.ok(ApiResponseBody.ok());
     }
@@ -84,10 +81,4 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponseBody.ok(response));
     }
 
-    private String resolveBearerToken(String authorization) {
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-            throw new BusinessException(ErrorCode.INVALID_TOKEN);
-        }
-        return authorization.substring("Bearer ".length()).trim();
-    }
 }
