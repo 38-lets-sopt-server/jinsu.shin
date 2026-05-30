@@ -3,6 +3,7 @@ package org.sopt.domain.user.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.user.dto.request.UserCreateRequest;
 import org.sopt.domain.user.dto.response.UserResponse;
@@ -29,7 +30,7 @@ public class UserController {
     @ApiResponse(responseCode = "201", description = "회원가입 성공")
     @CustomExceptionDescription(SwaggerResponseDescription.SIGNUP)
     @PostMapping
-    public ResponseEntity<ApiResponseBody<UserResponse, Void>> signup(@RequestBody UserCreateRequest request) {
+    public ResponseEntity<ApiResponseBody<UserResponse, Void>> signup(@Valid @RequestBody UserCreateRequest request) {
         UserResponse response = userService.join(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponseBody.created(response));

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.auth.dto.request.LoginRequest;
 import org.sopt.domain.auth.dto.response.TokenResponse;
@@ -37,7 +38,7 @@ public class AuthController {
     @CustomExceptionDescription(SwaggerResponseDescription.LOGIN)
     @PostMapping("/login")
     public ResponseEntity<ApiResponseBody<TokenResponse, Void>> login(
-            @RequestBody LoginRequest request
+            @Valid @RequestBody LoginRequest request
     ) {
         TokenResponse tokens = authService.login(request.email(), request.password());
         return ResponseEntity.ok(ApiResponseBody.ok(tokens));

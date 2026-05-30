@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.post.dto.request.CreatePostRequest;
 import org.sopt.domain.post.dto.request.UpdatePostRequest;
@@ -36,7 +37,7 @@ public class PostController {
     @PostMapping
     public ResponseEntity<ApiResponseBody<CreatePostResponse, Void>> createPost(
             @LoginUserId Long userId,
-            @RequestBody CreatePostRequest request
+            @Valid @RequestBody CreatePostRequest request
     ) {
         CreatePostResponse response = postService.createPost(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -86,7 +87,7 @@ public class PostController {
             @LoginUserId Long userId,
             @Parameter(description = "수정할 게시글 ID", example = "1", required = true)
             @PathVariable Long postId,
-            @RequestBody UpdatePostRequest request
+            @Valid @RequestBody UpdatePostRequest request
     ) {
         PostDetailResponse response = postService.updatePost(userId, postId, request);
         return ResponseEntity.ok(ApiResponseBody.ok(response));

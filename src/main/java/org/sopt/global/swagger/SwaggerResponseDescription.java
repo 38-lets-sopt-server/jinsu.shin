@@ -17,8 +17,6 @@ import static org.sopt.global.exception.ErrorCode.OAUTH_AUTHENTICATION_FAILED;
 import static org.sopt.global.exception.ErrorCode.OAUTH_EMAIL_ALREADY_REGISTERED;
 import static org.sopt.global.exception.ErrorCode.OAUTH_SERVER_ERROR;
 import static org.sopt.global.exception.ErrorCode.POST_NOT_FOUND;
-import static org.sopt.global.exception.ErrorCode.POST_TITLE_REQUIRED;
-import static org.sopt.global.exception.ErrorCode.POST_TITLE_TOO_LONG;
 import static org.sopt.global.exception.ErrorCode.REFRESH_TOKEN_EXPIRED;
 import static org.sopt.global.exception.ErrorCode.UNAUTHORIZED;
 import static org.sopt.global.exception.ErrorCode.USER_NOT_FOUND;
@@ -31,9 +29,9 @@ public enum SwaggerResponseDescription {
     GET_MY_INFO(Set.of(UNAUTHORIZED, USER_NOT_FOUND)),
     KAKAO_LOGIN(Set.of(OAUTH_AUTHENTICATION_FAILED, OAUTH_EMAIL_ALREADY_REGISTERED, OAUTH_SERVER_ERROR)),
     SIGNUP(Set.of(EMAIL_ALREADY_EXISTS)),
-    CREATE_POST(Set.of(POST_TITLE_REQUIRED, POST_TITLE_TOO_LONG, UNAUTHORIZED, USER_NOT_FOUND)),
+    CREATE_POST(Set.of(UNAUTHORIZED, USER_NOT_FOUND)),
     GET_POST(Set.of(POST_NOT_FOUND)),
-    UPDATE_POST(Set.of(POST_TITLE_REQUIRED, POST_TITLE_TOO_LONG, UNAUTHORIZED, FORBIDDEN, POST_NOT_FOUND)),
+    UPDATE_POST(Set.of(UNAUTHORIZED, FORBIDDEN, POST_NOT_FOUND)),
     DELETE_POST(Set.of(UNAUTHORIZED, FORBIDDEN, POST_NOT_FOUND)),
     ADD_LIKE(Set.of(UNAUTHORIZED, POST_NOT_FOUND, USER_NOT_FOUND, ALREADY_LIKED)),
     CANCEL_LIKE(Set.of(UNAUTHORIZED, POST_NOT_FOUND, USER_NOT_FOUND, LIKE_NOT_FOUND));

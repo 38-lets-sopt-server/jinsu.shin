@@ -3,6 +3,7 @@ package org.sopt.domain.auth.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.auth.dto.request.KakaoLoginRequest;
 import org.sopt.domain.auth.dto.response.TokenResponse;
@@ -30,7 +31,7 @@ public class OAuthController {
     @CustomExceptionDescription(SwaggerResponseDescription.KAKAO_LOGIN)
     @PostMapping("/kakao")
     public ResponseEntity<ApiResponseBody<TokenResponse, Void>> loginWithKakao(
-            @RequestBody KakaoLoginRequest request
+            @Valid @RequestBody KakaoLoginRequest request
     ) {
         TokenResponse tokens = oauthService.loginWithKakao(request.code());
         return ResponseEntity.ok(ApiResponseBody.ok(tokens));

@@ -13,8 +13,6 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(500, "COM_500_001", "서버 내부 오류가 발생했습니다."),
 
     // ===== POST =====
-    POST_TITLE_REQUIRED(400, "POS_400_001", "제목은 필수입니다."),
-    POST_TITLE_TOO_LONG(400, "POS_400_002", "제목은 50자 이하여야 합니다."),
     POST_NOT_FOUND(404, "POS_404_001", "게시글을 찾을 수 없습니다."),
 
     // ===== USER =====

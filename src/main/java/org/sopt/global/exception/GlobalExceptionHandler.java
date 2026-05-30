@@ -7,9 +7,12 @@ import org.sopt.global.response.ApiResponseBody;
 import org.sopt.global.response.ErrorMeta;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -31,6 +34,18 @@ public class GlobalExceptionHandler {
         ErrorMeta meta = new ErrorMeta(request.getRequestURI(), System.currentTimeMillis());
         return ResponseEntity.status(ErrorCode.CONCURRENT_REQUEST.getStatus())
                 .body(ApiResponseBody.onFailure(ErrorCode.CONCURRENT_REQUEST, meta));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponseBody<Void, ErrorMeta>> handleValidation(
+            MethodArgumentNotValidException e, HttpServletRequest request
+    ) {
+        String message = e.getBindingResult().getFieldErrors().stream()
+                .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+        ErrorMeta meta = new ErrorMeta(request.getRequestURI(), System.currentTimeMillis());
+        return ResponseEntity.status(ErrorCode.INVALID_INPUT.getStatus())
+                .body(ApiResponseBody.onFailure(ErrorCode.INVALID_INPUT, message, meta));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

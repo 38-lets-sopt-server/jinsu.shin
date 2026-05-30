@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostService {
 
-    private static final int TITLE_MAX_LENGTH = 50;
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
@@ -36,7 +35,6 @@ public class PostService {
 
     @Transactional
     public CreatePostResponse createPost(Long userId, CreatePostRequest request) {
-        validateTitle(request.title());
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         boolean anonymous = request.isAnonymous() != null ? request.isAnonymous() : true;
@@ -67,7 +65,6 @@ public class PostService {
 
     @Transactional
     public PostDetailResponse updatePost(Long userId, Long postId, UpdatePostRequest request) {
-        validateTitle(request.title());
         Post post = postRepository.findByIdWithUser(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
         validateOwner(post, userId);
@@ -102,15 +99,6 @@ public class PostService {
         return posts.stream()
                 .map(post -> PostSummaryResponse.from(post, likeCountMap.getOrDefault(post.getId(), 0L)))
                 .toList();
-    }
-
-    private static void validateTitle(String title) {
-        if (title == null || title.isBlank()) {
-            throw new BusinessException(ErrorCode.POST_TITLE_REQUIRED);
-        }
-        if (title.length() > TITLE_MAX_LENGTH) {
-            throw new BusinessException(ErrorCode.POST_TITLE_TOO_LONG);
-        }
     }
 
     private static void validateOwner(Post post, Long userId) {
