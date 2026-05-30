@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.sopt.domain.user.dto.request.UserCreateRequest;
 import org.sopt.domain.user.dto.response.UserResponse;
 import org.sopt.domain.user.service.UserService;
-import org.sopt.global.exception.SuccessCode;
 import org.sopt.global.response.ApiResponseBody;
 import org.sopt.global.swagger.CustomExceptionDescription;
 import org.sopt.global.swagger.SwaggerResponseDescription;
@@ -33,6 +32,6 @@ public class UserController {
     public ResponseEntity<ApiResponseBody<UserResponse, Void>> signup(@RequestBody UserCreateRequest request) {
         UserResponse response = userService.join(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponseBody.created(SuccessCode.CREATED, response));
+                .body(ApiResponseBody.created(response));
     }
 }

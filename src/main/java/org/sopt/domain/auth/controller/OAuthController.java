@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.sopt.domain.auth.dto.request.KakaoLoginRequest;
 import org.sopt.domain.auth.dto.response.TokenResponse;
 import org.sopt.domain.auth.service.OAuthService;
-import org.sopt.global.exception.SuccessCode;
 import org.sopt.global.response.ApiResponseBody;
 import org.sopt.global.swagger.CustomExceptionDescription;
 import org.sopt.global.swagger.SwaggerResponseDescription;
@@ -34,6 +33,6 @@ public class OAuthController {
             @RequestBody KakaoLoginRequest request
     ) {
         TokenResponse tokens = oauthService.loginWithKakao(request.code());
-        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, tokens));
+        return ResponseEntity.ok(ApiResponseBody.ok(tokens));
     }
 }

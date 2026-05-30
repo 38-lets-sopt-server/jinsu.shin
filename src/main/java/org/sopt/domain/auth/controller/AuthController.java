@@ -11,7 +11,6 @@ import org.sopt.domain.auth.service.AuthService;
 import org.sopt.domain.user.dto.response.UserResponse;
 import org.sopt.global.exception.BusinessException;
 import org.sopt.global.exception.ErrorCode;
-import org.sopt.global.exception.SuccessCode;
 import org.sopt.global.response.ApiResponseBody;
 import org.sopt.global.security.LoginUserId;
 import org.sopt.global.swagger.CustomExceptionDescription;
@@ -42,7 +41,7 @@ public class AuthController {
             @RequestBody LoginRequest request
     ) {
         TokenResponse tokens = authService.login(request.email(), request.password());
-        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, tokens));
+        return ResponseEntity.ok(ApiResponseBody.ok(tokens));
     }
 
     @Operation(summary = "토큰 재발급", description = "Refresh Token으로 새 Access/Refresh Token을 발급받습니다.")
@@ -54,7 +53,7 @@ public class AuthController {
     ) {
         String refreshToken = resolveBearerToken(authorization);
         TokenResponse tokens = authService.reissue(refreshToken);
-        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, tokens));
+        return ResponseEntity.ok(ApiResponseBody.ok(tokens));
     }
 
     @Operation(summary = "로그아웃", description = "Refresh Token 을 DB 에서 삭제하고 현재 Access Token 을 블랙리스트에 등록합니다.")
@@ -68,7 +67,7 @@ public class AuthController {
     ) {
         String accessToken = resolveBearerToken(authorization);
         authService.logout(userId, accessToken);
-        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK));
+        return ResponseEntity.ok(ApiResponseBody.ok());
     }
 
     @Operation(summary = "내 정보 조회 (Access Token 검증)")
@@ -82,7 +81,7 @@ public class AuthController {
         }
         Long userId = Long.parseLong(authentication.getName());
         UserResponse response = authService.getUserById(userId);
-        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, response));
+        return ResponseEntity.ok(ApiResponseBody.ok(response));
     }
 
     private String resolveBearerToken(String authorization) {

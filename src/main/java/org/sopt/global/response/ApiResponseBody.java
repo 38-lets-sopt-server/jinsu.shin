@@ -14,16 +14,16 @@ public record ApiResponseBody<T, M>(
         M meta
 ) {
 
-    public static ApiResponseBody<Void, Void> ok(SuccessCode successCode) {
-        return new ApiResponseBody<>(true, successCode.getStatus(), successCode.getMessage(), null, null, null);
+    public static ApiResponseBody<Void, Void> ok() {
+        return new ApiResponseBody<>(true, SuccessCode.OK.getStatus(), SuccessCode.OK.getMessage(), null, null, null);
     }
 
-    public static <T> ApiResponseBody<T, Void> ok(SuccessCode successCode, T data) {
-        return new ApiResponseBody<>(true, successCode.getStatus(), successCode.getMessage(), data, null, null);
+    public static <T> ApiResponseBody<T, Void> ok(T data) {
+        return new ApiResponseBody<>(true, SuccessCode.OK.getStatus(), SuccessCode.OK.getMessage(), data, null, null);
     }
 
-    public static <T> ApiResponseBody<T, Void> created(SuccessCode successCode, T data) {
-        return new ApiResponseBody<>(true, successCode.getStatus(), successCode.getMessage(), data, null, null);
+    public static <T> ApiResponseBody<T, Void> created(T data) {
+        return new ApiResponseBody<>(true, SuccessCode.CREATED.getStatus(), SuccessCode.CREATED.getMessage(), data, null, null);
     }
 
     public static ApiResponseBody<Void, ErrorMeta> onFailure(ErrorCode errorCode, ErrorMeta errorMeta) {

@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.like.service.LikeService;
-import org.sopt.global.exception.SuccessCode;
 import org.sopt.global.response.ApiResponseBody;
 import org.sopt.global.security.LoginUserId;
 import org.sopt.global.swagger.CustomExceptionDescription;
@@ -34,7 +33,7 @@ public class LikeController {
             @PathVariable Long postId
     ) {
         likeService.addLike(postId, userId);
-        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK));
+        return ResponseEntity.ok(ApiResponseBody.ok());
     }
 
     @Operation(summary = "좋아요 취소", description = "게시글의 좋아요를 취소합니다.")
@@ -48,6 +47,6 @@ public class LikeController {
             @PathVariable Long postId
     ) {
         likeService.cancelLike(postId, userId);
-        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK));
+        return ResponseEntity.ok(ApiResponseBody.ok());
     }
 }

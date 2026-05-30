@@ -13,7 +13,6 @@ import org.sopt.domain.post.dto.response.PostDetailResponse;
 import org.sopt.domain.post.dto.response.PostFeedResponse;
 import org.sopt.domain.post.entity.BoardType;
 import org.sopt.domain.post.service.PostService;
-import org.sopt.global.exception.SuccessCode;
 import org.sopt.global.response.ApiResponseBody;
 import org.sopt.global.security.LoginUserId;
 import org.sopt.global.swagger.CustomExceptionDescription;
@@ -41,7 +40,7 @@ public class PostController {
     ) {
         CreatePostResponse response = postService.createPost(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponseBody.created(SuccessCode.CREATED, response));
+                .body(ApiResponseBody.created(response));
     }
 
     @Operation(summary = "게시글 목록 조회 / 검색",
@@ -64,7 +63,7 @@ public class PostController {
         PostFeedResponse result = isSearch
                 ? postService.searchFeed(title, nickname, cursor, size)
                 : postService.getFeed(boardType, cursor, size);
-        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, result));
+        return ResponseEntity.ok(ApiResponseBody.ok(result));
     }
 
     @Operation(summary = "게시글 단건 조회", description = "게시글 ID로 특정 게시글을 조회합니다.")
@@ -75,7 +74,7 @@ public class PostController {
             @Parameter(description = "조회할 게시글 ID", example = "1", required = true)
             @PathVariable Long postId
     ) {
-        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, postService.getPost(postId)));
+        return ResponseEntity.ok(ApiResponseBody.ok(postService.getPost(postId)));
     }
 
     @Operation(summary = "게시글 수정", description = "게시글 제목과 내용을 수정합니다. 작성자 본인만 수정 가능합니다.")
@@ -90,7 +89,7 @@ public class PostController {
             @RequestBody UpdatePostRequest request
     ) {
         PostDetailResponse response = postService.updatePost(userId, postId, request);
-        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK, response));
+        return ResponseEntity.ok(ApiResponseBody.ok(response));
     }
 
     @Operation(summary = "게시글 삭제", description = "게시글을 소프트 딜리트합니다. 작성자 본인만 삭제 가능합니다.")
