@@ -2,6 +2,10 @@ spring:
   application:
     name: assignment
 
+  threads:
+    virtual:
+      enabled: false
+
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -38,3 +42,24 @@ oauth:
     redirect-uri: ${KAKAO_REDIRECT_URI}
     token-uri: https://kauth.kakao.com/oauth/token
     user-info-uri: https://kapi.kakao.com/v2/user/me
+
+---
+spring:
+  config:
+    activate:
+      on-profile: vt
+  threads:
+    virtual:
+      enabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: loadtest
+  datasource:
+    hikari:
+      maximum-pool-size: 100
+
+loadtest:
+  delay-ms: 100

@@ -3,14 +3,14 @@ package org.sopt.domain.like.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.like.service.LikeService;
-import org.sopt.global.exception.SuccessCode;
 import org.sopt.global.response.ApiResponseBody;
 import org.sopt.global.security.LoginUserId;
+import org.sopt.global.swagger.CustomExceptionDescription;
+import org.sopt.global.swagger.SwaggerResponseDescription;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,12 +24,8 @@ public class LikeController {
 
     @Operation(summary = "좋아요 추가", description = "게시글에 좋아요를 추가합니다. 중복 좋아요는 불가합니다.")
     @SecurityRequirement(name = "bearerAuth")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "좋아요 추가 성공"),
-            @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
-            @ApiResponse(responseCode = "404", description = "게시글 또는 사용자를 찾을 수 없음"),
-            @ApiResponse(responseCode = "409", description = "이미 좋아요를 눌렀습니다")
-    })
+    @ApiResponse(responseCode = "200", description = "좋아요 추가 성공")
+    @CustomExceptionDescription(SwaggerResponseDescription.ADD_LIKE)
     @PostMapping
     public ResponseEntity<ApiResponseBody<Void, Void>> addLike(
             @LoginUserId Long userId,
@@ -37,16 +33,13 @@ public class LikeController {
             @PathVariable Long postId
     ) {
         likeService.addLike(postId, userId);
-        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK));
+        return ResponseEntity.ok(ApiResponseBody.ok());
     }
 
     @Operation(summary = "좋아요 취소", description = "게시글의 좋아요를 취소합니다.")
     @SecurityRequirement(name = "bearerAuth")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "좋아요 취소 성공"),
-            @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
-            @ApiResponse(responseCode = "404", description = "게시글, 사용자 또는 좋아요를 찾을 수 없음")
-    })
+    @ApiResponse(responseCode = "200", description = "좋아요 취소 성공")
+    @CustomExceptionDescription(SwaggerResponseDescription.CANCEL_LIKE)
     @DeleteMapping
     public ResponseEntity<ApiResponseBody<Void, Void>> cancelLike(
             @LoginUserId Long userId,
@@ -54,6 +47,6 @@ public class LikeController {
             @PathVariable Long postId
     ) {
         likeService.cancelLike(postId, userId);
-        return ResponseEntity.ok(ApiResponseBody.ok(SuccessCode.OK));
+        return ResponseEntity.ok(ApiResponseBody.ok());
     }
 }
